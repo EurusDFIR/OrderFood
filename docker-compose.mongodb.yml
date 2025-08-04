@@ -1,0 +1,23 @@
+version: '3.8'
+services:
+  mongodb:
+    image: mongo:latest
+    container_name: orderfood-mongodb
+    restart: always
+    ports:
+      - "27017:27017"
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: admin
+      MONGO_INITDB_ROOT_PASSWORD: password123
+      MONGO_INITDB_DATABASE: orderfood
+    volumes:
+      - mongodb_data:/data/db
+    networks:
+      - orderfood-network
+
+volumes:
+  mongodb_data:
+
+networks:
+  orderfood-network:
+    driver: bridge
