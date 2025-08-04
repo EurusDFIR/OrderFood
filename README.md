@@ -52,3 +52,5 @@ Dự án được tổ chức thành hai phần chính, độc lập nhưng liê
 - **Frontend:** Chứa giao diện người dùng, được xây dựng bằng ReactJS và nằm trong thư mục `frontend/`.
 
 Cả hai thành phần này sẽ được khởi động và quản lý bởi Docker Compose.
+
+comment test by HungPro
