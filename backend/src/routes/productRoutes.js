@@ -8,8 +8,8 @@ const router = express.Router();
 // Public routes
 router.get('/', productController.getAllProducts);
 router.get('/popular', productController.getPopularProducts);
-router.get('/category/:category', productController.getProductsByCategory);
 router.get('/search/:query', productController.searchProducts);
+router.get('/category/:category', productController.getProductsByCategory);
 router.get('/:id', productController.getProduct);
 
 // Protected routes (require authentication)

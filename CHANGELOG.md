@@ -8,7 +8,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [1.0.0] - 2025-08-04
 
 ### Added
+
 - **User Authentication System**
+
   - User registration with validation
   - User login with JWT authentication
   - User profile management
@@ -16,6 +18,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Role-based access control (user/admin)
 
 - **Product Management System**
+
   - Complete CRUD operations for products
   - Product categorization (10 categories)
   - Product search functionality
@@ -28,6 +31,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Tags system for better searchability
 
 - **Database Models**
+
   - User model with full validation
   - Product model with comprehensive fields
   - MongoDB integration with Mongoose ODM
@@ -35,6 +39,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Data seeding script with sample products
 
 - **API Architecture**
+
   - RESTful API design
   - Input validation middleware
   - Error handling middleware
@@ -50,6 +55,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Git ignore configuration
 
 ### Technical Details
+
 - **Backend**: Node.js + Express.js
 - **Database**: MongoDB with Mongoose
 - **Authentication**: JWT with bcryptjs hashing
@@ -57,6 +63,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Containerization**: Docker & Docker Compose
 
 ### Security Features
+
 - Password hashing with bcryptjs (cost: 12)
 - JWT token-based authentication
 - Input validation and sanitization
@@ -64,7 +71,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Role-based access control
 
 ### API Endpoints
+
 #### Authentication
+
 - `POST /api/users/register` - User registration
 - `POST /api/users/login` - User login
 - `GET /api/users/me` - Get current user profile
@@ -72,6 +81,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `PUT /api/users/change-password` - Change password
 
 #### Products
+
 - `GET /api/products` - Get all products with filtering/pagination
 - `GET /api/products/popular` - Get popular products
 - `GET /api/products/category/:category` - Get products by category
@@ -82,15 +92,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `DELETE /api/products/:id` - Delete product (Admin only)
 
 #### System
+
 - `GET /api/health` - Health check endpoint
 
 ### Database
+
 - 10 sample products across different categories
 - Admin user account for testing
 - Proper indexing for search performance
 - Virtual fields for calculated values
 
 ### Documentation
+
 - Complete API documentation
 - Setup and installation guide
 - Docker deployment instructions
@@ -100,6 +113,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Planned Features
+
 - [ ] Order Management System
 - [ ] Shopping Cart functionality
 - [ ] Payment Integration

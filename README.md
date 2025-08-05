@@ -34,6 +34,7 @@
   - **Đặt món ăn:** Người dùng có thể thêm các món ăn vào giỏ hàng và tạo một đơn hàng mới.
   - **Lịch sử đơn hàng:** Người dùng có thể xem lại lịch sử các đơn hàng đã đặt của mình.
   - **Chi tiết đơn hàng:** Hệ thống lưu trữ các thông tin chi tiết của đơn hàng như các món đã chọn, số lượng, địa điểm nhận hàng, và tổng số tiền.
+    Tracking trạng thái đơn hàng, admin quan ly don hang
 
 - **Mô-đun Thanh toán (Payment)**
 
@@ -41,6 +42,12 @@
   - **Áp dụng mã giảm giá:** Hỗ trợ nhập và xử lý mã giảm giá.
   - **Thanh toán:** Tích hợp quy trình thanh toán (đơn giản).
 
+-** module Shopping cart**
+
+- Thêm/xóa sản phẩm vào cart
+- Cập nhật số lượng
+- Tính tổng tiền
+- Lưu cart state
 - **Mô-đun Liên hệ (Contact)**
   - **Giao diện liên hệ:** Cung cấp một giao diện tĩnh hoặc form đơn giản để người dùng có thể gửi câu hỏi hoặc phản hồi.
 

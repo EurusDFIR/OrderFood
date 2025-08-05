@@ -200,3 +200,16 @@ ecosystem.config.js
 
 # Redis dump
 dump.rdb
+
+# Documentation files (exclude from git)
+doc/
+docs/
+*.md
+!README.md
+!CHANGELOG.md
+
+# API documentation
+PRODUCT_API_GUIDE.md
+CART_ORDER_TESTING_GUIDE.md
+SECURITY_GUIDE.md
+ORDER_API_GUIDE.md
