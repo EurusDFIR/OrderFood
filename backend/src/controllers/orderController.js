@@ -134,7 +134,10 @@ exports.getOrderDetails = asyncHandler(async (req, res, next) => {
   }
 
   // Kiểm tra quyền: user chỉ xem được đơn hàng của mình, admin xem được tất cả
-  if (order.user._id.toString() !== req.user._id.toString() && req.user.role !== 'admin') {
+  const orderUserId = order.user._id ? order.user._id.toString() : order.user.toString();
+  const currentUserId = req.user._id.toString();
+  
+  if (orderUserId !== currentUserId && req.user.role !== 'admin') {
     return next(new AppError('Bạn không có quyền xem đơn hàng này', 403));
   }
 
@@ -150,6 +153,11 @@ exports.getOrderDetails = asyncHandler(async (req, res, next) => {
 // @route   PUT /api/orders/:id/cancel
 // @access  Private
 exports.cancelOrder = asyncHandler(async (req, res, next) => {
+  console.log('=== CANCEL ORDER FUNCTION CALLED ===');
+  console.log('Request params:', req.params);
+  console.log('Request body:', req.body);
+  console.log('User from token:', req.user);
+  
   const { reason } = req.body;
 
   const order = await Order.findById(req.params.id);
@@ -157,8 +165,18 @@ exports.cancelOrder = asyncHandler(async (req, res, next) => {
     return next(new AppError('Đơn hàng không tồn tại', 404));
   }
 
-  // Kiểm tra quyền
-  if (order.user.toString() !== req.user._id.toString() && req.user.role !== 'admin') {
+  // Kiểm tra quyền - Convert về string để so sánh
+  const orderUserId = order.user._id ? order.user._id.toString() : order.user.toString();
+  const currentUserId = req.user._id.toString();
+  
+  // Debug log
+  console.log('Cancel Order Debug:');
+  console.log('Order User ID:', orderUserId);
+  console.log('Current User ID:', currentUserId);
+  console.log('User Role:', req.user.role);
+  console.log('Order Status:', order.status);
+  
+  if (orderUserId !== currentUserId && req.user.role !== 'admin') {
     return next(new AppError('Bạn không có quyền hủy đơn hàng này', 403));
   }
 

@@ -34,7 +34,7 @@ const cartSchema = new mongoose.Schema({
         required: true,
         unique: true
     },
-    itmes: [cartItemSchema],
+    items: [cartItemSchema],  // SỬA: itmes → items
     totalItems: {
         type: Number,
         default:0
@@ -45,7 +45,6 @@ const cartSchema = new mongoose.Schema({
     }
 },{
     timestamps:true
-
 });
 // Su dung vitual de tao subtotal tranh luu vao db khi cac cot price va quantity thay doi
 cartItemSchema.virtual('subtotal').get(function(){
@@ -53,6 +52,11 @@ cartItemSchema.virtual('subtotal').get(function(){
 })
 
 cartSchema.pre('save', function(next) {
+  // Đảm bảo items luôn là array
+  if (!this.items || !Array.isArray(this.items)) {
+    this.items = [];
+  }
+  
   this.totalItems = this.items.reduce((total, item) => total + item.quantity, 0);
   this.totalAmount = this.items.reduce((total, item) => total + (item.price * item.quantity), 0);
   next();

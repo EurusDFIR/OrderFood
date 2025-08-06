@@ -8,7 +8,7 @@ const AppError = require('../utils/AppError');
 // @route   GET /api/cart
 // @access  Private
 exports.getCart = asyncHandler(async (req, res) => {
-  let cart = await Cart.findOne({ user: req.user._id }).populate('items.product', 'name price image isAvailable');
+  let cart = await Cart.findOne({ user: req.user._id });
   
   if (!cart) {
     cart = await Cart.create({ 
@@ -19,17 +19,22 @@ exports.getCart = asyncHandler(async (req, res) => {
     });
   }
 
-  // Kiểm tra sản phẩm còn available không
-  const updatedItems = cart.items.filter(item => {
-    if (!item.product || !item.product.isAvailable) {
-      return false;
-    }
-    return true;
-  });
+  // Populate sau khi đã có cart
+  if (cart.items && cart.items.length > 0) {
+    await cart.populate('items.product', 'name price image isAvailable');
+    
+    // Kiểm tra sản phẩm còn available không
+    const updatedItems = cart.items.filter(item => {
+      if (!item.product || !item.product.isAvailable) {
+        return false;
+      }
+      return true;
+    });
 
-  if (updatedItems.length !== cart.items.length) {
-    cart.items = updatedItems;
-    await cart.save();
+    if (updatedItems.length !== cart.items.length) {
+      cart.items = updatedItems;
+      await cart.save();
+    }
   }
 
   res.status(200).json({
@@ -62,6 +67,11 @@ exports.addToCart = asyncHandler(async (req, res, next) => {
     cart = new Cart({ user: req.user._id, items: [] });
   }
 
+  // Đảm bảo items luôn là array
+  if (!cart.items || !Array.isArray(cart.items)) {
+    cart.items = [];
+  }
+
   // Kiểm tra sản phẩm đã có trong cart chưa
   const existingItemIndex = cart.items.findIndex(
     item => item.product.toString() === productId
@@ -83,8 +93,10 @@ exports.addToCart = asyncHandler(async (req, res, next) => {
 
   await cart.save();
 
-  // Populate để trả về thông tin đầy đủ
-  await cart.populate('items.product', 'name price image isAvailable');
+  // Populate để trả về thông tin đầy đủ - chỉ populate nếu có items
+  if (cart.items && cart.items.length > 0) {
+    await cart.populate('items.product', 'name price image isAvailable');
+  }
 
   res.status(200).json({
     status: 'success',
@@ -110,6 +122,11 @@ exports.updateCartItem = asyncHandler(async (req, res, next) => {
     return next(new AppError('Giỏ hàng không tồn tại', 404));
   }
 
+  // Đảm bảo items luôn là array
+  if (!cart.items || !Array.isArray(cart.items)) {
+    cart.items = [];
+  }
+
   const itemIndex = cart.items.findIndex(
     item => item.product.toString() === productId
   );
@@ -121,7 +138,10 @@ exports.updateCartItem = asyncHandler(async (req, res, next) => {
   cart.items[itemIndex].quantity = quantity;
   await cart.save();
 
-  await cart.populate('items.product', 'name price image isAvailable');
+  // Populate chỉ khi có items
+  if (cart.items && cart.items.length > 0) {
+    await cart.populate('items.product', 'name price image isAvailable');
+  }
 
   res.status(200).json({
     status: 'success',
@@ -143,12 +163,21 @@ exports.removeFromCart = asyncHandler(async (req, res, next) => {
     return next(new AppError('Giỏ hàng không tồn tại', 404));
   }
 
+  // Đảm bảo items luôn là array
+  if (!cart.items || !Array.isArray(cart.items)) {
+    cart.items = [];
+  }
+
   cart.items = cart.items.filter(
     item => item.product.toString() !== productId
   );
 
   await cart.save();
-  await cart.populate('items.product', 'name price image isAvailable');
+  
+  // Populate chỉ khi còn items
+  if (cart.items && cart.items.length > 0) {
+    await cart.populate('items.product', 'name price image isAvailable');
+  }
 
   res.status(200).json({
     status: 'success',

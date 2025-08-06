@@ -58,6 +58,11 @@ exports.protect = async (req, res, next) => {
 // Middleware để restrict to certain roles
 exports.restrictTo = (...roles) => {
   return (req, res, next) => {
+    console.log('=== RESTRICT TO MIDDLEWARE ===');
+    console.log('Required roles:', roles);
+    console.log('User role:', req.user?.role);
+    console.log('Route path:', req.path);
+    
     if (!roles.includes(req.user.role)) {
       return res.status(403).json({
         status: 'error',

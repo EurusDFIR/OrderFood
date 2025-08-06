@@ -27,8 +27,8 @@ const orderItemSchema = new mongoose.Schema({
 const orderSchema = new mongoose.Schema({
     orderNumber: {
         type: String,
-        unique: true,
-        required: true
+        unique: true
+        // Bỏ required: true vì sẽ được tạo tự động trong middleware
     },
     user: {
         type: mongoose.Schema.Types.ObjectId,
@@ -143,13 +143,19 @@ orderItemSchema.virtual('subtotal').get(function() {
   return this.price * this.quantity;
 });
 
-// Middleware để generate order number
+// Middleware để generate order number và track status changes
 orderSchema.pre('save', async function(next) {
+  // Generate order number cho document mới
   if (this.isNew) {
     const date = new Date();
     const dateStr = date.toISOString().slice(0, 10).replace(/-/g, '');
     const randomNum = Math.floor(Math.random() * 1000).toString().padStart(3, '0');
     this.orderNumber = `OF${dateStr}${randomNum}`;
+    
+    // Đảm bảo statusHistory được khởi tạo
+    if (!this.statusHistory) {
+      this.statusHistory = [];
+    }
     
     // Thêm vào status history
     this.statusHistory.push({
@@ -161,12 +167,14 @@ orderSchema.pre('save', async function(next) {
     // Tính estimated delivery (2 giờ từ bây giờ)
     this.estimatedDelivery = new Date(Date.now() + 2 * 60 * 60 * 1000);
   }
-  next();
-});
-
-// Middleware để track status changes
-orderSchema.pre('save', function(next) {
+  
+  // Track status changes cho document đã tồn tại
   if (this.isModified('status') && !this.isNew) {
+    // Đảm bảo statusHistory tồn tại
+    if (!this.statusHistory) {
+      this.statusHistory = [];
+    }
+    
     this.statusHistory.push({
       status: this.status,
       timestamp: new Date(),
@@ -180,6 +188,7 @@ orderSchema.pre('save', function(next) {
       this.cancelledAt = new Date();
     }
   }
+  
   next();
 });
 

@@ -23,8 +23,8 @@ const createOrderValidation = [
     .withMessage('Địa chỉ phải có ít nhất 10 ký tự'),
   body('deliveryInfo.phone')
     .optional()
-    .isMobilePhone('vi-VN')
-    .withMessage('Số điện thoại không hợp lệ'),
+    .matches(/^[0-9]{10,11}$/)
+    .withMessage('Số điện thoại phải có 10-11 chữ số'),
   body('paymentMethod')
     .optional()
     .isIn(['cash', 'card', 'bank_transfer'])
@@ -56,13 +56,16 @@ router.use(protect);
 // User routes
 router.post('/', createOrderValidation, createOrder);
 router.get('/my-orders', getMyOrders);
-router.get('/:id', orderIdValidation, getOrderDetails);
+
+// Cancel order route - Must be before /:id route to avoid conflicts
 router.put('/:id/cancel', orderIdValidation, cancelOrder);
 
-// Admin routes
-router.use(restrictTo('admin'));
-router.get('/admin/all', getAllOrders);
-router.get('/admin/stats', getOrderStats);
-router.put('/:id/status', [...orderIdValidation, ...updateStatusValidation], updateOrderStatus);
+// Get order detail route
+router.get('/:id', orderIdValidation, getOrderDetails);
+
+// Admin routes - Apply restrictTo specifically to each route
+router.get('/admin/all', restrictTo('admin'), getAllOrders);
+router.get('/admin/stats', restrictTo('admin'), getOrderStats);
+router.put('/:id/status', restrictTo('admin'), ...orderIdValidation, ...updateStatusValidation, updateOrderStatus);
 
 module.exports = router;
