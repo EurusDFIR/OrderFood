@@ -49,8 +49,8 @@ app.all('*', (req, res) => {
 app.use((err, req, res, next) => {
   console.error('Error:', err);
   
-  res.status(err.status || 500).json({
-    status: 'error',
+  res.status(err.statusCode || 500).json({
+    status: err.status || 'error',
     message: err.message || 'Internal Server Error',
     ...(process.env.NODE_ENV === 'development' && { stack: err.stack })
   });

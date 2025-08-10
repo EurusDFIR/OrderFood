@@ -75,9 +75,9 @@ paymentSchema.pre('save', function(next) {
   if (this.isNew && !this.paymentId) {
     const date = new Date();
     const dateStr = date.toISOString().slice(0, 10).replace(/-/g, '');
-    const timeStr = date.toTimeString().slice(0, 8).replace(/:/g, '');
-    const randomNum = Math.floor(Math.random() * 10000).toString().padStart(4, '0');
-    this.paymentId = `PAY${dateStr}${timeStr}${randomNum}`;
+    const randomNum = Math.floor(Math.random() * 1000).toString().padStart(3, '0');
+    this.paymentId = `PAY${dateStr}${randomNum}`;
+    console.log('Generated paymentId:', this.paymentId);
   }
   next();
 });

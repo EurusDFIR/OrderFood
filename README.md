@@ -29,6 +29,12 @@
   - **Xem chi tiết món ăn:** Người dùng có thể xem thông tin chi tiết hơn về một món ăn cụ thể (tên, giá, mô tả).
   - **Quản lý món ăn:** (Dành cho Admin - có thể mở rộng sau này) Hệ thống cho phép thêm, sửa, xóa các món ăn trong menu.
 
+
+
+
+
+
+
 - **Mô-đun Đơn hàng (Order)**
 
   - **Đặt món ăn:** Người dùng có thể thêm các món ăn vào giỏ hàng và tạo một đơn hàng mới.

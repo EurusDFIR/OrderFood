@@ -3,7 +3,9 @@ const {
   createPayment,
   confirmPayment,
   momoIPN,
-  getPayment
+  getPayment,
+  getUserPayments,
+  getAllPayments
 } = require('../controllers/paymentController');
 const { protect, restrictTo } = require('../middleware/auth');
 const { body, param } = require('express-validator');
@@ -47,9 +49,11 @@ router.use(protect);
 
 // User routes
 router.post('/create', createPaymentValidation, createPayment);
+router.get('/my-payments', getUserPayments); // Must be BEFORE /:paymentId
 router.get('/:paymentId', getPayment);
 
 // Admin routes
+router.get('/admin/all', restrictTo('admin'), getAllPayments);
 router.put('/:paymentId/confirm', restrictTo('admin'), confirmPaymentValidation, confirmPayment);
 
 module.exports = router;

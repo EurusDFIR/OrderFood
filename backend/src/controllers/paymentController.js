@@ -28,10 +28,32 @@ exports.createPayment = asyncHandler(async (req, res, next) => {
     return next(new AppError('Đơn hàng không thể thanh toán ở trạng thái hiện tại', 400));
   }
 
+  // Kiểm tra xem order đã có payment chưa
+  const existingPayment = await Payment.findOne({ 
+    order: orderId, 
+    status: { $in: ['pending', 'processing', 'completed'] } 
+  });
+  
+  if (existingPayment) {
+    return next(new AppError('Đơn hàng đã có payment đang xử lý hoặc đã hoàn thành', 400));
+  }
+
   const finalAmount = order.totalAmount;
+
+  // Generate unique paymentId
+  const generatePaymentId = () => {
+    const date = new Date();
+    const dateStr = date.toISOString().slice(0, 10).replace(/-/g, '');
+    const timeStr = Date.now().toString().slice(-6); // Last 6 digits of timestamp
+    const randomNum = Math.floor(Math.random() * 100).toString().padStart(2, '0');
+    return `PAY${dateStr}${timeStr}${randomNum}`;
+  };
+
+  const paymentId = generatePaymentId();
 
   // Tạo payment record
   const payment = await Payment.create({
+    paymentId: paymentId,
     order: orderId,
     user: req.user._id,
     amount: finalAmount,
@@ -42,6 +64,9 @@ exports.createPayment = asyncHandler(async (req, res, next) => {
       userAgent: req.get('User-Agent')
     }
   });
+
+  console.log('Created payment with ID:', payment.paymentId);
+  console.log('Payment saved to DB:', payment._id);
 
   let paymentData = {
     paymentId: payment.paymentId,
@@ -217,11 +242,15 @@ exports.momoIPN = asyncHandler(async (req, res) => {
 // @access  Private
 exports.getPayment = asyncHandler(async (req, res, next) => {
   const { paymentId } = req.params;
+  
+  console.log('Looking for payment with paymentId:', paymentId);
 
   const payment = await Payment.findOne({ paymentId })
     .populate('order', 'orderNumber totalAmount status')
     .populate('user', 'name email phone');
 
+  console.log('Payment found:', payment ? 'YES' : 'NO');
+  
   if (!payment) {
     return next(new AppError('Payment không tồn tại', 404));
   }
@@ -241,8 +270,17 @@ exports.getPayment = asyncHandler(async (req, res, next) => {
 // @access  Private helper method
 exports.generateAndSendInvoice = async (payment) => {
   try {
+    // Generate invoiceNumber
+    const date = new Date();
+    const year = date.getFullYear();
+    const month = (date.getMonth() + 1).toString().padStart(2, '0');
+    const day = date.getDate().toString().padStart(2, '0');
+    const randomNum = Math.floor(Math.random() * 10000).toString().padStart(4, '0');
+    const invoiceNumber = `INV${year}${month}${day}${randomNum}`;
+
     // Tạo invoice
     const invoice = await Invoice.create({
+      invoiceNumber: invoiceNumber,
       order: payment.order._id,
       payment: payment._id,
       user: payment.user._id || payment.order.user._id,
@@ -299,5 +337,73 @@ exports.generateAndSendInvoice = async (payment) => {
     throw error;
   }
 };
+
+// @desc    Get user's payment history
+// @route   GET /api/payments/my-payments
+// @access  Private
+exports.getUserPayments = asyncHandler(async (req, res, next) => {
+  const page = parseInt(req.query.page) || 1;
+  const limit = parseInt(req.query.limit) || 10;
+  const skip = (page - 1) * limit;
+
+  const payments = await Payment.find({ user: req.user._id })
+    .populate('order', 'orderNumber totalAmount status')
+    .sort({ createdAt: -1 })
+    .skip(skip)
+    .limit(limit);
+
+  const total = await Payment.countDocuments({ user: req.user._id });
+
+  res.status(200).json({
+    status: 'success',
+    data: {
+      payments,
+      pagination: {
+        page,
+        limit,
+        total,
+        pages: Math.ceil(total / limit)
+      }
+    }
+  });
+});
+
+// @desc    Get all payments (Admin only)
+// @route   GET /api/payments/admin/all
+// @access  Private/Admin
+exports.getAllPayments = asyncHandler(async (req, res, next) => {
+  const page = parseInt(req.query.page) || 1;
+  const limit = parseInt(req.query.limit) || 10;
+  const skip = (page - 1) * limit;
+  const status = req.query.status;
+
+  // Build query
+  const query = {};
+  if (status) {
+    query.status = status;
+  }
+
+  const payments = await Payment.find(query)
+    .populate('order', 'orderNumber totalAmount status')
+    .populate('user', 'name email phone')
+    .sort({ createdAt: -1 })
+    .skip(skip)
+    .limit(limit);
+
+  const total = await Payment.countDocuments(query);
+
+  res.status(200).json({
+    status: 'success',
+    data: {
+      payments,
+      pagination: {
+        page,
+        limit,
+        total,
+        pages: Math.ceil(total / limit)
+      }
+    }
+  });
+});
 
 module.exports = exports;

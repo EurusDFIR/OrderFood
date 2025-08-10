@@ -1,0 +1,762 @@
+{
+	"info": {
+		"_postman_id": "payment-api-collection",
+		"name": "OrderFood Payment API Tests",
+		"description": "Complete test collection for Payment, Invoice and Email APIs",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Authentication & Setup",
+			"item": [
+				{
+					"name": "Health Check",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/health",
+							"host": ["{{baseUrl}}"],
+							"path": ["health"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Register User",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"name\": \"Payment Test User\",\n  \"email\": \"payment@test.com\",\n  \"password\": \"Test123456\",\n  \"phone\": \"0123456789\",\n  \"address\": \"123 Payment Test Street, Ho Chi Minh City\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/users/register",
+							"host": ["{{baseUrl}}"],
+							"path": ["users", "register"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Login User",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 200) {",
+									"    const response = pm.response.json();",
+									"    pm.environment.set('authToken', response.token);",
+									"    pm.environment.set('userId', response.data.user._id);",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"email\": \"payment@test.com\",\n  \"password\": \"Test123456\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/users/login",
+							"host": ["{{baseUrl}}"],
+							"path": ["users", "login"]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Order Setup for Payment",
+			"item": [
+				{
+					"name": "Get Products",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 200) {",
+									"    const response = pm.response.json();",
+									"    if (response.data.products.length > 0) {",
+									"        pm.environment.set('productId1', response.data.products[0]._id);",
+									"        pm.environment.set('productId2', response.data.products[1]._id);",
+									"    }",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/products?limit=5",
+							"host": ["{{baseUrl}}"],
+							"path": ["products"],
+							"query": [
+								{
+									"key": "limit",
+									"value": "5"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Add Product to Cart 1",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{authToken}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"productId\": \"{{productId1}}\",\n  \"quantity\": 2\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/cart/add",
+							"host": ["{{baseUrl}}"],
+							"path": ["cart", "add"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Add Product to Cart 2",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{authToken}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"productId\": \"{{productId2}}\",\n  \"quantity\": 1\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/cart/add",
+							"host": ["{{baseUrl}}"],
+							"path": ["cart", "add"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create Order",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 201) {",
+									"    const response = pm.response.json();",
+									"    pm.environment.set('orderId', response.data.order._id);",
+									"    pm.environment.set('orderNumber', response.data.order.orderNumber);",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{authToken}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"deliveryInfo\": {\n    \"recipientName\": \"Payment Test User\",\n    \"phone\": \"0123456789\",\n    \"address\": \"123 Payment Test Street, District 1, Ho Chi Minh City\",\n    \"notes\": \"Test order for payment\"\n  },\n  \"paymentMethod\": \"cash\",\n  \"notes\": \"Test order for payment system\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/orders",
+							"host": ["{{baseUrl}}"],
+							"path": ["orders"]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Payment API Tests",
+			"item": [
+				{
+					"name": "Create Cash Payment",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 201) {",
+									"    const response = pm.response.json();",
+									"    pm.environment.set('cashPaymentId', response.data.payment.paymentId);",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{authToken}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"orderId\": \"{{orderId}}\",\n  \"paymentMethod\": \"cash\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/payments/create",
+							"host": ["{{baseUrl}}"],
+							"path": ["payments", "create"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create MoMo Payment",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 201) {",
+									"    const response = pm.response.json();",
+									"    pm.environment.set('momoPaymentId', response.data.payment.paymentId);",
+									"    pm.environment.set('momoPaymentUrl', response.data.payment.paymentUrl);",
+									"    pm.environment.set('momoQrUrl', response.data.payment.qrCodeUrl);",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{authToken}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"orderId\": \"{{orderId}}\",\n  \"paymentMethod\": \"momo\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/payments/create",
+							"host": ["{{baseUrl}}"],
+							"path": ["payments", "create"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create Banking Payment",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 201) {",
+									"    const response = pm.response.json();",
+									"    pm.environment.set('bankingPaymentId', response.data.payment.paymentId);",
+									"    pm.environment.set('bankingQR', response.data.payment.qrContent);",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{authToken}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"orderId\": \"{{orderId}}\",\n  \"paymentMethod\": \"banking\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/payments/create",
+							"host": ["{{baseUrl}}"],
+							"path": ["payments", "create"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Payment Details",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{authToken}}"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/payments/{{cashPaymentId}}",
+							"host": ["{{baseUrl}}"],
+							"path": ["payments", "{{cashPaymentId}}"]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Admin Payment Management",
+			"item": [
+				{
+					"name": "Login Admin",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 200) {",
+									"    const response = pm.response.json();",
+									"    pm.environment.set('adminToken', response.token);",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"email\": \"admin@orderfood.com\",\n  \"password\": \"admin123\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/users/login",
+							"host": ["{{baseUrl}}"],
+							"path": ["users", "login"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Confirm Banking Payment (Admin)",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{adminToken}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"transactionId\": \"BANK123456789\",\n  \"notes\": \"Manual confirmation via banking transfer\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/payments/{{bankingPaymentId}}/confirm",
+							"host": ["{{baseUrl}}"],
+							"path": ["payments", "{{bankingPaymentId}}", "confirm"]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "MoMo Integration Tests",
+			"item": [
+				{
+					"name": "MoMo IPN Callback (Simulate Success)",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"partnerCode\": \"MOMOBKUN20180529\",\n  \"orderId\": \"{{momoPaymentId}}\",\n  \"requestId\": \"{{momoPaymentId}}\",\n  \"amount\": 100000,\n  \"orderInfo\": \"Test payment\",\n  \"orderType\": \"momo_wallet\",\n  \"transId\": 2147483647,\n  \"resultCode\": 0,\n  \"message\": \"Successful.\",\n  \"payType\": \"qr\",\n  \"responseTime\": 1633072053897,\n  \"extraData\": \"\",\n  \"signature\": \"test_signature\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/payments/momo/ipn",
+							"host": ["{{baseUrl}}"],
+							"path": ["payments", "momo", "ipn"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "MoMo IPN Callback (Simulate Failed)",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"partnerCode\": \"MOMOBKUN20180529\",\n  \"orderId\": \"{{momoPaymentId}}\",\n  \"requestId\": \"{{momoPaymentId}}\",\n  \"amount\": 100000,\n  \"orderInfo\": \"Test payment\",\n  \"orderType\": \"momo_wallet\",\n  \"transId\": 0,\n  \"resultCode\": 1006,\n  \"message\": \"Transaction is rejected\",\n  \"payType\": \"qr\",\n  \"responseTime\": 1633072053897,\n  \"extraData\": \"\",\n  \"signature\": \"test_signature\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/payments/momo/ipn",
+							"host": ["{{baseUrl}}"],
+							"path": ["payments", "momo", "ipn"]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Invoice & Email Tests",
+			"item": [
+				{
+					"name": "Test Email Connection",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{adminToken}}"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/test/email",
+							"host": ["{{baseUrl}}"],
+							"path": ["test", "email"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Send Test Invoice Email",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{adminToken}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"paymentId\": \"{{cashPaymentId}}\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/test/send-invoice",
+							"host": ["{{baseUrl}}"],
+							"path": ["test", "send-invoice"]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Complete Payment Flow Tests",
+			"item": [
+				{
+					"name": "Full Cash Payment Flow",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"// This test will run the complete flow:",
+									"// 1. Create new order",
+									"// 2. Create cash payment",
+									"// 3. Verify payment is completed",
+									"// 4. Check invoice generation",
+									"// 5. Check email sending"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{authToken}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"orderId\": \"{{orderId}}\",\n  \"paymentMethod\": \"cash\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/payments/create",
+							"host": ["{{baseUrl}}"],
+							"path": ["payments", "create"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Full MoMo Payment Flow",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{authToken}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"orderId\": \"{{orderId}}\",\n  \"paymentMethod\": \"momo\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/payments/create",
+							"host": ["{{baseUrl}}"],
+							"path": ["payments", "create"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Full Banking Payment Flow",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{authToken}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"orderId\": \"{{orderId}}\",\n  \"paymentMethod\": \"banking\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/payments/create",
+							"host": ["{{baseUrl}}"],
+							"path": ["payments", "create"]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Error Handling Tests",
+			"item": [
+				{
+					"name": "Create Payment - Invalid Order ID",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{authToken}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"orderId\": \"invalid_order_id\",\n  \"paymentMethod\": \"cash\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/payments/create",
+							"host": ["{{baseUrl}}"],
+							"path": ["payments", "create"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create Payment - Invalid Payment Method",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{authToken}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"orderId\": \"{{orderId}}\",\n  \"paymentMethod\": \"invalid_method\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/payments/create",
+							"host": ["{{baseUrl}}"],
+							"path": ["payments", "create"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Payment - Not Found",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{authToken}}"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/payments/NONEXISTENT123",
+							"host": ["{{baseUrl}}"],
+							"path": ["payments", "NONEXISTENT123"]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Confirm Payment - Unauthorized",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{authToken}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"transactionId\": \"TEST123\",\n  \"notes\": \"Unauthorized attempt\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/payments/{{bankingPaymentId}}/confirm",
+							"host": ["{{baseUrl}}"],
+							"path": ["payments", "{{bankingPaymentId}}", "confirm"]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					"// Global pre-request script",
+					"console.log('Running request: ' + pm.info.requestName);"
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					"// Global test script",
+					"console.log('Response time: ' + pm.response.responseTime + 'ms');",
+					"console.log('Status code: ' + pm.response.code);"
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "baseUrl",
+			"value": "http://localhost:5000/api",
+			"type": "string"
+		}
+	]
+}
