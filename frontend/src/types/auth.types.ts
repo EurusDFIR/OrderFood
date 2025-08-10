@@ -24,20 +24,21 @@ export interface RegisterData {
 
 // Authentication Response Types
 export interface AuthResponse {
-  status: 'success';
-  token: string;
-  data: {
-    user: User;
+  user: User;
+  tokens: {
+    accessToken: string;
+    refreshToken: string;
   };
 }
 
 // Auth Context Type
 export interface AuthContextType {
   user: User | null;
-  token: string | null;
-  login: (credentials: LoginCredentials) => Promise<void>;
-  register: (data: RegisterData) => Promise<void>;
-  logout: () => void;
-  loading: boolean;
+  isLoading: boolean;
   isAuthenticated: boolean;
+  error: string | null;
+  login: (credentials: LoginCredentials) => Promise<{ success: boolean; error?: string }>;
+  register: (data: RegisterData) => Promise<{ success: boolean; error?: string }>;
+  logout: () => Promise<void>;
+  clearError: () => void;
 }

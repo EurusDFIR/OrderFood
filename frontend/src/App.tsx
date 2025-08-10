@@ -1,128 +1,107 @@
-import { useState } from "react";
-import { Button, Card, Input, Modal, LoadingSpinner } from "@/components";
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import { AuthProvider } from "@/context/AuthContext";
+import { Layout } from "@/components/layout/Layout";
+import { ProtectedRoute } from "@/components/auth/ProtectedRoute";
+
+// Pages
+import { HomePage } from "@/pages/Homepage";
+import { LoginPage } from "@/pages/auth/LoginPage";
+import { RegisterPage } from "@/pages/auth/RegisterPage";
 
 function App() {
-  const [count, setCount] = useState(0);
-  const [showModal, setShowModal] = useState(false);
-  const [loading, setLoading] = useState(false);
-
-  const handleLoadingDemo = () => {
-    setLoading(true);
-    setTimeout(() => setLoading(false), 2000);
-  };
-
   return (
-    <div className="min-h-screen bg-gray-50 p-4">
-      <div className="container mx-auto max-w-4xl">
-        <h1 className="text-4xl font-bold text-center mb-8 text-gradient">
-          🍕 OrderFood Frontend
-        </h1>
+    <AuthProvider>
+      <Router>
+        <Layout>
+          <Routes>
+            {/* Public Routes */}
+            <Route path="/" element={<HomePage />} />
 
-        <div className="grid gap-6 md:grid-cols-2">
-          {/* Basic Components Demo */}
-          <Card
-            header={<h2 className="text-xl font-semibold">Basic Components</h2>}
-            className="space-y-4"
-          >
-            <p className="text-gray-600">Phase 1.5 Setup Complete! ✅</p>
-
-            <div className="space-y-3">
-              <Button onClick={() => setCount(count + 1)}>
-                Count: {count}
-              </Button>
-
-              <Button variant="secondary" onClick={() => setCount(0)}>
-                Reset
-              </Button>
-
-              <Button variant="outline" onClick={() => setShowModal(true)}>
-                Open Modal
-              </Button>
-
-              <Button
-                variant="ghost"
-                onClick={handleLoadingDemo}
-                loading={loading}
-              >
-                Loading Demo
-              </Button>
-            </div>
-          </Card>
-
-          {/* Form Components Demo */}
-          <Card
-            header={<h2 className="text-xl font-semibold">Form Components</h2>}
-            className="space-y-4"
-          >
-            <Input
-              label="Email"
-              type="email"
-              placeholder="Enter your email"
-              required
+            {/* Auth Routes (redirect to home if already authenticated) */}
+            <Route
+              path="/login"
+              element={
+                <ProtectedRoute requireAuth={false}>
+                  <LoginPage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/register"
+              element={
+                <ProtectedRoute requireAuth={false}>
+                  <RegisterPage />
+                </ProtectedRoute>
+              }
             />
 
-            <Input
-              label="Password"
-              type="password"
-              placeholder="Enter password"
-              helperText="Minimum 8 characters"
+            {/* Protected Routes (coming in next phases) */}
+            <Route
+              path="/products"
+              element={
+                <div className="container mx-auto px-4 py-8">
+                  <h1 className="text-3xl font-bold">Thực đơn (Coming Soon)</h1>
+                  <p className="text-gray-600 mt-2">
+                    Trang này sẽ được phát triển trong Phase 3
+                  </p>
+                </div>
+              }
             />
 
-            <Input
-              label="Phone"
-              type="tel"
-              placeholder="Phone number"
-              error="Invalid phone number format"
+            <Route
+              path="/orders"
+              element={
+                <ProtectedRoute>
+                  <div className="container mx-auto px-4 py-8">
+                    <h1 className="text-3xl font-bold">
+                      Đơn hàng của tôi (Coming Soon)
+                    </h1>
+                    <p className="text-gray-600 mt-2">
+                      Trang này sẽ được phát triển trong Phase 4
+                    </p>
+                  </div>
+                </ProtectedRoute>
+              }
             />
 
-            {loading && (
-              <div className="flex items-center justify-center py-4">
-                <LoadingSpinner size="lg" />
-              </div>
-            )}
-          </Card>
-        </div>
+            <Route
+              path="/cart"
+              element={
+                <ProtectedRoute>
+                  <div className="container mx-auto px-4 py-8">
+                    <h1 className="text-3xl font-bold">
+                      Giỏ hàng (Coming Soon)
+                    </h1>
+                    <p className="text-gray-600 mt-2">
+                      Trang này sẽ được phát triển trong Phase 4
+                    </p>
+                  </div>
+                </ProtectedRoute>
+              }
+            />
 
-        {/* Tech Stack Info */}
-        <Card className="mt-6">
-          <div className="text-center">
-            <h3 className="text-lg font-semibold mb-4">Tech Stack</h3>
-            <div className="flex flex-wrap justify-center gap-2">
-              {["React 18", "TypeScript", "Vite", "Tailwind CSS", "Axios"].map(
-                (tech) => (
-                  <span key={tech} className="badge badge-primary">
-                    {tech}
-                  </span>
-                )
-              )}
-            </div>
-          </div>
-        </Card>
-
-        {/* Modal Demo */}
-        <Modal
-          isOpen={showModal}
-          onClose={() => setShowModal(false)}
-          title="Demo Modal"
-          footer={
-            <div className="space-x-2">
-              <Button variant="ghost" onClick={() => setShowModal(false)}>
-                Cancel
-              </Button>
-              <Button onClick={() => setShowModal(false)}>Confirm</Button>
-            </div>
-          }
-        >
-          <p className="text-gray-600">
-            This is a demo modal showcasing the reusable components created in
-            Phase 1.5.
-          </p>
-          <p className="text-sm text-gray-500 mt-2">
-            Components include: Button, Card, Input, Modal, LoadingSpinner
-          </p>
-        </Modal>
-      </div>
-    </div>
+            {/* 404 Page */}
+            <Route
+              path="*"
+              element={
+                <div className="container mx-auto px-4 py-8 text-center">
+                  <h1 className="text-4xl font-bold text-gray-900 mb-4">404</h1>
+                  <p className="text-lg text-gray-600 mb-6">
+                    Trang không tồn tại
+                  </p>
+                  <a
+                    href="/"
+                    className="text-primary-600 hover:text-primary-700 font-medium"
+                  >
+                    Về trang chủ
+                  </a>
+                </div>
+              }
+            />
+          </Routes>
+        </Layout>
+      </Router>
+    </AuthProvider>
   );
 }
 

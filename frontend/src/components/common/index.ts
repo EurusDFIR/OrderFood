@@ -2,5 +2,5 @@
 export { Button } from './Button';
 export { Input } from './Input';
 export { Card } from './Card';
-export { LoadingSpinner, LoadingOverlay } from './LoadingSpinner';
+export { LoadingSpinner } from './LoadingSpinner';
 export { Modal } from './Modal';
