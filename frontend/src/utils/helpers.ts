@@ -11,6 +11,11 @@ export const formatCurrency = (amount: number): string => {
   }).format(amount);
 };
 
+// Format Price (alias for formatCurrency for convenience)
+export const formatPrice = (amount: number): string => {
+  return formatCurrency(amount);
+};
+
 // Format Date
 export const formatDate = (dateString: string): string => {
   const date = new Date(dateString);
