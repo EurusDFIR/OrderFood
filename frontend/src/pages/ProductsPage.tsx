@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useProducts } from "@/context/ProductContext";
+import { useCart } from "@/context/CartContext";
 import type { Product, ProductFilters } from "@/types/product.types";
 import { ProductGrid } from "@/components/products/ProductGrid";
 import { ProductModal } from "@/components/products/ProductModal";
@@ -16,6 +17,8 @@ export const ProductsPage: React.FC = () => {
     setFilters,
     clearFilters,
   } = useProducts();
+
+  const { addToCart } = useCart();
 
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -62,12 +65,12 @@ export const ProductsPage: React.FC = () => {
     setIsModalOpen(false);
   };
 
-  const handleAddToCart = (productId: string, quantity: number = 1) => {
-    // TODO: Implement add to cart functionality
-    console.log(
-      `Adding product ${productId} to cart with quantity ${quantity}`
-    );
-    // This will be implemented when we create the cart context
+  const handleAddToCart = async (productId: string, quantity: number = 1) => {
+    const success = await addToCart(productId, quantity);
+    if (success) {
+      // Optionally show a success message or toast
+      console.log(`Successfully added product ${productId} to cart`);
+    }
   };
 
   if (error) {

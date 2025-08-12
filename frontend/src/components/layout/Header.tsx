@@ -2,6 +2,7 @@ import React from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "@/context/AuthContext";
 import { Button } from "@/components";
+import { CartBadge } from "@/components/cart/CartBadge";
 
 export const Header: React.FC = () => {
   const navigate = useNavigate();
@@ -39,7 +40,7 @@ export const Header: React.FC = () => {
                 </Link>
                 <Link to="/cart" className="nav-link relative">
                   Giỏ hàng
-                  {/* Cart count badge will be added here */}
+                  <CartBadge />
                 </Link>
               </>
             )}
