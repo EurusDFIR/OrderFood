@@ -11,7 +11,8 @@ const signToken = (id) => {
 
 // Tạo và gửi token response
 const createSendToken = (user, statusCode, res) => {
-  const token = signToken(user._id);
+  const accessToken = signToken(user._id);
+  const refreshToken = signToken(user._id); // In real app, this should be different
   
   const cookieOptions = {
     expires: new Date(
@@ -22,16 +23,19 @@ const createSendToken = (user, statusCode, res) => {
 
   if (process.env.NODE_ENV === 'production') cookieOptions.secure = true;
 
-  res.cookie('jwt', token, cookieOptions);
+  res.cookie('jwt', accessToken, cookieOptions);
 
   // Remove password from output
   user.password = undefined;
 
   res.status(statusCode).json({
     status: 'success',
-    token,
     data: {
-      user
+      user,
+      tokens: {
+        accessToken,
+        refreshToken
+      }
     }
   });
 };
