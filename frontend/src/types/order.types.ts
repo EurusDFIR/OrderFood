@@ -51,4 +51,6 @@ export interface OrderFilters {
   paymentStatus?: string;
   startDate?: string;
   endDate?: string;
+  page?: number;
+  limit?: number;
 }

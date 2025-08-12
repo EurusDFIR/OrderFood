@@ -12,11 +12,11 @@ export const STORAGE_KEYS = {
 // API Endpoints
 export const API_ENDPOINTS = {
   AUTH: {
-    LOGIN: '/auth/login',
-    REGISTER: '/auth/register',
-    REFRESH: '/auth/refresh',
-    LOGOUT: '/auth/logout',
-    PROFILE: '/auth/profile',
+    LOGIN: '/users/login',
+    REGISTER: '/users/register',
+    REFRESH: '/users/refresh',
+    LOGOUT: '/users/logout',
+    PROFILE: '/users/me',
   },
   PRODUCTS: {
     BASE: '/products',
