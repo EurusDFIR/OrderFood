@@ -159,6 +159,47 @@ exports.getPopularProducts = async (req, res) => {
   }
 };
 
+// @desc    Lấy danh sách categories
+// @route   GET /api/products/categories  
+// @access  Public
+exports.getCategories = async (req, res) => {
+  try {
+    // Get distinct categories from products
+    const categories = await Product.distinct('category', { isAvailable: true });
+    
+    // Get category stats
+    const categoryStats = await Product.aggregate([
+      { $match: { isAvailable: true } },
+      { 
+        $group: {
+          _id: '$category',
+          count: { $sum: 1 },
+          avgPrice: { $avg: '$price' },
+          minPrice: { $min: '$price' },
+          maxPrice: { $max: '$price' }
+        }
+      },
+      { $sort: { count: -1 } }
+    ]);
+
+    res.status(200).json({
+      status: 'success',
+      results: categories.length,
+      data: {
+        categories,
+        categoryStats
+      }
+    });
+  } catch (error) {
+    console.error('Get categories error:', error);
+    res.status(500).json({
+      status: 'error',
+      message: 'Lỗi server',
+      error: error.message
+    });
+  }
+};
+
 // @desc    Lấy chi tiết một sản phẩm
 // @route   GET /api/products/:id
 // @access  Public

@@ -24,7 +24,11 @@ export const productService = {
 
   // Get product categories
   getCategories: async (): Promise<ApiResponse<string[]>> => {
-    return apiService.get<string[]>(API_ENDPOINTS.PRODUCTS.CATEGORIES);
+    const response = await apiService.get<{categories: string[], categoryStats: any[]}>(API_ENDPOINTS.PRODUCTS.CATEGORIES);
+    return {
+      ...response,
+      data: response.data?.categories || []
+    };
   },
 
   // Get featured products

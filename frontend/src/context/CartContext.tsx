@@ -58,12 +58,12 @@ const cartReducer = (state: CartState, action: CartAction): CartState => {
       return {
         ...state,
         cart: action.payload,
-        items: action.payload.items,
-        itemCount: action.payload.items.reduce(
+        items: action.payload?.items || [],
+        itemCount: (action.payload?.items || []).reduce(
           (sum, item) => sum + item.quantity,
           0
         ),
-        totalAmount: action.payload.totalAmount,
+        totalAmount: action.payload?.totalAmount || 0,
         isLoading: false,
         error: null,
       };

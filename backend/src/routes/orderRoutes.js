@@ -55,6 +55,7 @@ router.use(protect);
 
 // User routes
 router.post('/', createOrderValidation, createOrder);
+router.get('/', getMyOrders); // Add this route for GET /orders
 router.get('/my-orders', getMyOrders);
 
 // Cancel order route - Must be before /:id route to avoid conflicts

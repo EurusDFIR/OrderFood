@@ -117,6 +117,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   useEffect(() => {
     const loadUser = async () => {
       const token = tokenUtils.getAccessToken();
+
       if (token && !tokenUtils.isTokenExpired(token)) {
         dispatch({ type: "LOAD_USER_START" });
         try {

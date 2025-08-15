@@ -3,6 +3,7 @@ import React, {
   useContext,
   useReducer,
   useCallback,
+  useMemo,
 } from "react";
 import type { ReactNode } from "react";
 import type {
@@ -162,23 +163,38 @@ export const ProductProvider: React.FC<ProductProviderProps> = ({
   // Load products with optional filters and pagination
   const loadProducts = useCallback(
     async (params?: ProductsQuery) => {
+      console.log("🔄 loadProducts called with params:", params);
       dispatch({ type: "SET_LOADING", payload: true });
       try {
         const queryParams = {
-          ...state.filters,
+          page: 1,
+          limit: 12,
           ...params,
-          page: params?.page || state.pagination.page,
-          limit: params?.limit || state.pagination.limit,
         };
 
+        console.log("📡 Calling API with:", queryParams);
         const response = await productService.getProducts(queryParams);
+        console.log("📦 ProductContext loadProducts response:", response);
 
         if (response.status === "success" && response.data) {
+          // API service trả về response.data chính là response body từ server
+          // Format: {status, results, pagination, data: {products: []}}
+          const apiResponse = response.data as any;
+          const products = apiResponse.data?.products || [];
+          const pagination = apiResponse.pagination || {
+            page: 1,
+            limit: 12,
+            total: products.length,
+            pages: 1,
+          };
+
+          console.log("Parsed products:", products, "pagination:", pagination);
+
           dispatch({
             type: "SET_PRODUCTS",
             payload: {
-              products: response.data.data,
-              pagination: response.data.pagination,
+              products: products,
+              pagination: pagination,
             },
           });
         } else {
@@ -194,7 +210,7 @@ export const ProductProvider: React.FC<ProductProviderProps> = ({
         });
       }
     },
-    [state.filters, state.pagination.page, state.pagination.limit]
+    [] // Remove state dependencies
   );
 
   // Load single product
@@ -254,14 +270,20 @@ export const ProductProvider: React.FC<ProductProviderProps> = ({
       try {
         const response = await productService.searchProducts(
           query,
-          state.filters
+          {} // Use empty filters for now
         );
 
         if (response.status === "success" && response.data) {
+          console.log("Search products response:", response);
+
+          // Parse response - handle nested structure safely
+          const responseData = response.data.data as any;
+          const products = responseData?.products || responseData || [];
+
           dispatch({
             type: "SET_PRODUCTS",
             payload: {
-              products: response.data.data,
+              products,
               pagination: response.data.pagination,
             },
           });
@@ -278,7 +300,7 @@ export const ProductProvider: React.FC<ProductProviderProps> = ({
         });
       }
     },
-    [state.filters]
+    [] // Remove state dependencies
   );
 
   // Set filters
@@ -297,17 +319,30 @@ export const ProductProvider: React.FC<ProductProviderProps> = ({
   }, []);
 
   // Context value
-  const value: ProductContextType = {
-    state,
-    loadProducts,
-    loadProduct,
-    loadCategories,
-    loadFeaturedProducts,
-    searchProducts,
-    setFilters,
-    clearFilters,
-    setSearchQuery,
-  };
+  const value: ProductContextType = useMemo(
+    () => ({
+      state,
+      loadProducts,
+      loadProduct,
+      loadCategories,
+      loadFeaturedProducts,
+      searchProducts,
+      setFilters,
+      clearFilters,
+      setSearchQuery,
+    }),
+    [
+      state,
+      loadProducts,
+      loadProduct,
+      loadCategories,
+      loadFeaturedProducts,
+      searchProducts,
+      setFilters,
+      clearFilters,
+      setSearchQuery,
+    ]
+  );
 
   return (
     <ProductContext.Provider value={value}>{children}</ProductContext.Provider>

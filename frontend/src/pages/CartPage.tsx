@@ -30,7 +30,8 @@ export const CartPage: React.FC = () => {
   };
 
   const handleCheckout = () => {
-    if (cart && cart.items.length > 0) {
+    const safeCartItems = cart?.items || [];
+    if (cart && safeCartItems.length > 0) {
       navigate("/checkout");
     }
   };
@@ -63,7 +64,11 @@ export const CartPage: React.FC = () => {
     );
   }
 
-  if (!cart || cart.items.length === 0) {
+  // Safe cart items to prevent undefined errors
+  const safeCartItems = cart?.items || [];
+
+  // Empty cart state
+  if (!cart || safeCartItems.length === 0) {
     return (
       <div className="container mx-auto px-4 py-8">
         <div className="text-center max-w-md mx-auto">
@@ -89,14 +94,16 @@ export const CartPage: React.FC = () => {
         <h1 className="text-3xl font-bold text-gray-900 mb-2">
           Giỏ hàng của bạn
         </h1>
-        <p className="text-gray-600">{cart.items.length} món trong giỏ hàng</p>
+        <p className="text-gray-600">
+          {safeCartItems.length} món trong giỏ hàng
+        </p>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         {/* Cart Items */}
         <div className="lg:col-span-2">
           <div className="space-y-4">
-            {cart.items.map((item) => (
+            {safeCartItems.map((item) => (
               <CartItem
                 key={item._id}
                 item={item}
