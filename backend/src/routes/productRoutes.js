@@ -9,7 +9,7 @@ const router = express.Router();
 router.get('/', productController.getAllProducts);
 router.get('/popular', productController.getPopularProducts);
 router.get('/categories', productController.getCategories); // Add this line
-router.get('/search/:query', productController.searchProducts);
+router.get('/search', productController.searchProducts); // Changed from /:query to query param
 router.get('/category/:category', productController.getProductsByCategory);
 router.get('/:id', productController.getProduct); // Keep this last
 

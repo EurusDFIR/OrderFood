@@ -382,40 +382,61 @@ exports.deleteProduct = async (req, res) => {
 };
 
 // @desc    Tìm kiếm sản phẩm
-// @route   GET /api/products/search/:query
+// @route   GET /api/products/search?q=query
 // @access  Public
 exports.searchProducts = async (req, res) => {
   try {
-    const { query } = req.params;
+    const query = req.query.q; // Changed from req.params.query to req.query.q
+    
+    if (!query) {
+      return res.status(400).json({
+        status: 'error',
+        message: 'Query parameter "q" is required'
+      });
+    }
+    
     const page = req.query.page * 1 || 1;
     const limit = req.query.limit * 1 || 10;
     const skip = (page - 1) * limit;
+    
+    // Enhanced search with multiple fields and fuzzy matching
+    const searchWords = query.split(' ').filter(word => word.length > 0);
+    const searchConditions = [];
+    
+    // Exact phrase match
+    searchConditions.push({
+      $or: [
+        { name: { $regex: query, $options: 'i' } },
+        { description: { $regex: query, $options: 'i' } },
+        { category: { $regex: query, $options: 'i' } }
+      ]
+    });
+    
+    // Individual word matches
+    searchWords.forEach(word => {
+      searchConditions.push({
+        $or: [
+          { name: { $regex: word, $options: 'i' } },
+          { description: { $regex: word, $options: 'i' } },
+          { category: { $regex: word, $options: 'i' } },
+          { tags: { $in: [new RegExp(word, 'i')] } }
+        ]
+      });
+    });
 
     const products = await Product.find({
       $and: [
-        {
-          $or: [
-            { name: { $regex: query, $options: 'i' } },
-            { description: { $regex: query, $options: 'i' } },
-            { tags: { $in: [new RegExp(query, 'i')] } }
-          ]
-        },
+        { $or: searchConditions },
         { isAvailable: true }
       ]
     })
-    .sort({ 'ratings.average': -1 })
+    .sort({ 'ratings.average': -1, name: 1 })
     .skip(skip)
     .limit(limit);
 
     const totalProducts = await Product.countDocuments({
       $and: [
-        {
-          $or: [
-            { name: { $regex: query, $options: 'i' } },
-            { description: { $regex: query, $options: 'i' } },
-            { tags: { $in: [new RegExp(query, 'i')] } }
-          ]
-        },
+        { $or: searchConditions },
         { isAvailable: true }
       ]
     });

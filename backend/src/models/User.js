@@ -27,7 +27,7 @@ const userSchema = new mongoose.Schema({
   phone: {
     type: String,
     trim: true,
-    match: [/^[0-9]{10,11}$/, 'Số điện thoại không hợp lệ']
+    match: [/^[\+]?[0-9\s\-\(\)]{8,15}$/, 'Số điện thoại không hợp lệ (8-15 số)']
   },
   address: {
     type: String,

@@ -16,14 +16,12 @@ exports.validateRegister = [
   
   body('password')
     .isLength({ min: 6 })
-    .withMessage('Mật khẩu phải có ít nhất 6 ký tự')
-    .matches(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/)
-    .withMessage('Mật khẩu phải chứa ít nhất 1 chữ thường, 1 chữ hoa và 1 số'),
+    .withMessage('Mật khẩu phải có ít nhất 6 ký tự'),
   
   body('phone')
     .optional()
-    .matches(/^[0-9]{10,11}$/)
-    .withMessage('Số điện thoại không hợp lệ'),
+    .matches(/^[\+]?[0-9\s\-\(\)]{8,15}$/)
+    .withMessage('Số điện thoại không hợp lệ (8-15 số, có thể có +, -, (), space)'),
   
   body('address')
     .optional()

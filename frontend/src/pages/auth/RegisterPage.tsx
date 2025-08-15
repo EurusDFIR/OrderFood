@@ -136,8 +136,8 @@ export const RegisterPage: React.FC = () => {
             value={formData.phone}
             onChange={handleChange}
             error={formErrors.phone}
-            placeholder="Nhập số điện thoại (tùy chọn)"
-            helperText="Số điện thoại giúp chúng tôi liên hệ khi giao hàng"
+            placeholder="Ví dụ: 0987654321, +84987654321"
+            helperText="Số điện thoại để liên hệ khi giao hàng (8-15 số)"
           />
 
           <Input
@@ -148,7 +148,7 @@ export const RegisterPage: React.FC = () => {
             onChange={handleChange}
             error={formErrors.password}
             placeholder="Nhập mật khẩu"
-            helperText="Tối thiểu 6 ký tự"
+            helperText="Tối thiểu 6 ký tự bất kỳ"
             required
           />
 

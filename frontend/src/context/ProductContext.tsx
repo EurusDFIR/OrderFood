@@ -169,6 +169,7 @@ export const ProductProvider: React.FC<ProductProviderProps> = ({
         const queryParams = {
           page: 1,
           limit: 12,
+          ...state.filters, // Include current filters
           ...params,
         };
 
@@ -214,7 +215,7 @@ export const ProductProvider: React.FC<ProductProviderProps> = ({
         });
       }
     },
-    [] // Remove state dependencies
+    [state.filters] // Include filters in dependencies
   );
 
   // Load single product
@@ -272,9 +273,10 @@ export const ProductProvider: React.FC<ProductProviderProps> = ({
       dispatch({ type: "SET_SEARCH_QUERY", payload: query });
 
       try {
+        // Use current filters when searching
         const response = await productService.searchProducts(
           query,
-          {} // Use empty filters for now
+          state.filters
         );
 
         if (response.status === "success") {

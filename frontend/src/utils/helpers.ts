@@ -49,10 +49,15 @@ export const isValidEmail = (email: string): boolean => {
   return emailRegex.test(email);
 };
 
-// Validate Phone Number (Vietnamese format)
+// Validate Phone Number (Flexible format)
 export const isValidPhone = (phone: string): boolean => {
-  const phoneRegex = /^(0|\+84)[3|5|7|8|9][0-9]{8}$/;
-  return phoneRegex.test(phone.replace(/\s/g, ''));
+  // Remove all spaces, dashes, and parentheses
+  const cleanPhone = phone.replace(/[\s\-\(\)]/g, '');
+  
+  // Allow phone numbers with 8-15 digits, optionally starting with + or country code
+  const phoneRegex = /^(\+?[1-9]\d{0,3})?[0-9]{8,11}$/;
+  
+  return phoneRegex.test(cleanPhone) && cleanPhone.length >= 8 && cleanPhone.length <= 15;
 };
 
 // Generate Order ID
