@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo, useCallback, memo } from "react";
 import { useSearchParams } from "react-router-dom";
 import { useProducts } from "@/context/ProductContext";
 import { useCart } from "@/context/CartContext";
@@ -6,7 +6,62 @@ import type { Product, ProductFilters } from "@/types/product.types";
 import { ProductModal } from "@/components/products/ProductModal";
 import { SearchBar } from "@/components/products/SearchBar";
 import { ProductFilter } from "@/components/products/ProductFilter";
+import { ProductCard } from "@/components/products/ProductCard";
 import { Button } from "@/components/common/Button";
+
+// Fallback image as data URL to avoid network requests
+const FALLBACK_IMAGE =
+  "data:image/svg+xml,%3csvg width='400' height='300' xmlns='http://www.w3.org/2000/svg'%3e%3crect width='400' height='300' fill='%23f3f4f6'/%3e%3ctext x='200' y='150' text-anchor='middle' font-family='Arial' font-size='16' fill='%236b7280'%3e🍽️ No Image%3c/text%3e%3c/svg%3e";
+
+// Memoized image component to prevent re-renders
+const ProductImage = memo(
+  ({
+    src,
+    alt,
+    productId,
+  }: {
+    src: string;
+    alt: string;
+    productId: string;
+  }) => {
+    const [imgSrc, setImgSrc] = useState(src || FALLBACK_IMAGE);
+    const [hasErrored, setHasErrored] = useState(false);
+
+    const handleError = useCallback(() => {
+      console.log(
+        `🖼️ Image error for product ${productId}, src: ${imgSrc}, hasErrored: ${hasErrored}`
+      );
+      if (!hasErrored && imgSrc !== FALLBACK_IMAGE) {
+        setHasErrored(true);
+        setImgSrc(FALLBACK_IMAGE);
+        console.log(`🔄 Switching to fallback for product ${productId}`);
+      } else {
+        console.log(
+          `⚠️ Already using fallback for product ${productId}, preventing infinite loop`
+        );
+      }
+    }, [hasErrored, imgSrc, productId]);
+
+    // Update src when prop changes but preserve error state
+    useEffect(() => {
+      if (!hasErrored && src && src !== imgSrc) {
+        setImgSrc(src);
+      }
+    }, [src, hasErrored, imgSrc]);
+
+    return (
+      <img
+        key={`${productId}-image`}
+        src={imgSrc}
+        alt={alt}
+        className="w-full h-48 object-cover group-hover:scale-105 transition-transform duration-300"
+        onError={handleError}
+      />
+    );
+  }
+);
+
+ProductImage.displayName = "ProductImage";
 
 // Helper function to format currency
 const formatCurrency = (amount: number): string => {
@@ -32,12 +87,11 @@ export const ProductsPage: React.FC = () => {
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
-  const { products, categories, isLoading, error, filters, searchQuery } =
-    state;
+  const { products, categories, isLoading, error, filters } = state;
 
-  // Safe arrays to prevent undefined errors
-  const safeProducts = products || [];
-  const safeCategories = categories || [];
+  // Safe arrays to prevent undefined errors with memoization
+  const safeProducts = useMemo(() => products || [], [products]);
+  const safeCategories = useMemo(() => categories || [], [categories]);
 
   // Debug log to track re-renders
   console.log("ProductsPage render:", {
@@ -47,34 +101,56 @@ export const ProductsPage: React.FC = () => {
     error,
   });
 
-  // Initial load
+  // Extract search params with useMemo to prevent infinite re-renders
+  const urlSearchQuery = useMemo(
+    () => searchParams.get("search") || "",
+    [searchParams]
+  );
+  const urlCategoryParam = useMemo(
+    () => searchParams.get("category") || "",
+    [searchParams]
+  );
+
+  // Initial load - only once on mount
   useEffect(() => {
     console.log("🎯 ProductsPage initial load");
     loadProducts();
     loadCategories();
-  }, []);
+  }, []); // Empty deps to run only once
 
-  // Handle URL parameter changes
+  // Handle URL parameter changes separately
   useEffect(() => {
     console.log("🔍 URL params changed");
+    console.log("🔍 URL params:", { urlSearchQuery, urlCategoryParam });
 
-    const searchQuery = searchParams.get("search") || "";
-    const categoryParam = searchParams.get("category") || "";
-
-    console.log("🔍 URL params:", { searchQuery, categoryParam });
-
-    if (searchQuery) {
-      console.log("🔎 Performing search for:", searchQuery);
-      searchProducts(searchQuery);
-    } else if (categoryParam) {
-      console.log("📂 Filtering by category:", categoryParam);
-      setFilters({ category: categoryParam });
-      loadProducts({ category: categoryParam });
-    } else {
-      console.log("📋 Loading all products (no filters)");
-      loadProducts();
+    // Only run if there are actually URL params (not on initial load)
+    if (urlSearchQuery || urlCategoryParam) {
+      if (urlSearchQuery) {
+        console.log("🔎 Performing search for:", urlSearchQuery);
+        searchProducts(urlSearchQuery);
+      } else if (urlCategoryParam) {
+        console.log("📂 Filtering by category:", urlCategoryParam);
+        setFilters({ category: urlCategoryParam });
+        loadProducts({ category: urlCategoryParam });
+      }
     }
-  }, [searchParams.toString()]); // Depend on the full search params string
+  }, [urlSearchQuery, urlCategoryParam]); // Only depend on URL params, not functions
+
+  // Memoized callback functions to prevent re-renders
+  const handleAddToCart = useCallback(
+    async (product: Product) => {
+      const success = await addToCart(product._id, 1);
+      if (success) {
+        console.log(`Successfully added ${product.name} to cart`);
+      }
+    },
+    [addToCart]
+  );
+
+  const handleViewDetails = useCallback((product: Product) => {
+    setSelectedProduct(product);
+    setIsModalOpen(true);
+  }, []);
 
   const handleSearch = async (query: string) => {
     if (query.trim()) {
@@ -86,8 +162,8 @@ export const ProductsPage: React.FC = () => {
 
   const handleFiltersChange = async (newFilters: ProductFilters) => {
     setFilters(newFilters);
-    if (searchQuery.trim()) {
-      await searchProducts(searchQuery);
+    if (urlSearchQuery.trim()) {
+      await searchProducts(urlSearchQuery);
     } else {
       await loadProducts();
     }
@@ -98,22 +174,20 @@ export const ProductsPage: React.FC = () => {
     loadProducts();
   };
 
-  const handleViewDetails = (product: Product) => {
-    setSelectedProduct(product);
-    setIsModalOpen(true);
-  };
+  // Wrapper for ProductModal's different interface
+  const handleModalAddToCart = useCallback(
+    async (productId: string, quantity: number) => {
+      const success = await addToCart(productId, quantity);
+      if (success) {
+        console.log(`Successfully added product to cart`);
+      }
+    },
+    [addToCart]
+  );
 
   const handleCloseModal = () => {
     setSelectedProduct(null);
     setIsModalOpen(false);
-  };
-
-  const handleAddToCart = async (productId: string, quantity: number = 1) => {
-    const success = await addToCart(productId, quantity);
-    if (success) {
-      // Optionally show a success message or toast
-      console.log(`Successfully added product ${productId} to cart`);
-    }
   };
 
   if (error) {
@@ -147,7 +221,7 @@ export const ProductsPage: React.FC = () => {
               <p className="text-gray-600">
                 Khám phá {safeProducts.length} món ăn ngon được tuyển chọn đặc
                 biệt
-                {searchQuery && ` cho "${searchQuery}"`}
+                {urlSearchQuery && ` cho "${urlSearchQuery}"`}
               </p>
             </div>
 
@@ -195,9 +269,9 @@ export const ProductsPage: React.FC = () => {
                   <span className="text-gray-700 font-medium">
                     {safeProducts.length} sản phẩm
                   </span>
-                  {searchQuery && (
+                  {urlSearchQuery && (
                     <span className="bg-orange-100 text-orange-800 px-3 py-1 rounded-full text-sm">
-                      Kết quả cho: {searchQuery}
+                      Kết quả cho: {urlSearchQuery}
                     </span>
                   )}
                 </div>
@@ -268,14 +342,10 @@ export const ProductsPage: React.FC = () => {
                         >
                           {/* Product Image */}
                           <div className="relative overflow-hidden">
-                            <img
-                              src={productData.image || "/placeholder-food.jpg"}
+                            <ProductImage
+                              src={productData.image}
                               alt={product.name}
-                              className="w-full h-48 object-cover group-hover:scale-105 transition-transform duration-300"
-                              onError={(e) => {
-                                (e.target as HTMLImageElement).src =
-                                  "/placeholder-food.jpg";
-                              }}
+                              productId={product._id}
                             />
                             {productData.discount &&
                               productData.discount.percentage > 0 && (
@@ -376,9 +446,7 @@ export const ProductsPage: React.FC = () => {
                                   </svg>
                                 </button>
                                 <button
-                                  onClick={() =>
-                                    handleAddToCart(product._id, 1)
-                                  }
+                                  onClick={() => handleAddToCart(product)}
                                   className="bg-orange-500 hover:bg-orange-600 text-white px-4 py-2 rounded-lg font-medium transition-colors"
                                 >
                                   Thêm
@@ -402,8 +470,11 @@ export const ProductsPage: React.FC = () => {
         product={selectedProduct}
         isOpen={isModalOpen}
         onClose={handleCloseModal}
-        onAddToCart={handleAddToCart}
+        onAddToCart={handleModalAddToCart}
       />
     </div>
   );
 };
+
+// Export memoized component to prevent unnecessary re-renders
+export default memo(ProductsPage);

@@ -176,19 +176,23 @@ export const ProductProvider: React.FC<ProductProviderProps> = ({
         const response = await productService.getProducts(queryParams);
         console.log("📦 ProductContext loadProducts response:", response);
 
-        if (response.status === "success" && response.data) {
-          // API service trả về response.data chính là response body từ server
-          // Format: {status, results, pagination, data: {products: []}}
-          const apiResponse = response.data as any;
-          const products = apiResponse.data?.products || [];
-          const pagination = apiResponse.pagination || {
+        if (response.status === "success") {
+          // Handle server response structure: {status, results, pagination, data: {products: []}}
+          const serverResponse = response as any;
+          const products = serverResponse.data?.products || [];
+          const pagination = serverResponse.pagination || {
             page: 1,
             limit: 12,
             total: products.length,
             pages: 1,
           };
 
-          console.log("Parsed products:", products, "pagination:", pagination);
+          console.log(
+            "✅ Parsed products:",
+            products.length,
+            "items, pagination:",
+            pagination
+          );
 
           dispatch({
             type: "SET_PRODUCTS",
@@ -273,18 +277,24 @@ export const ProductProvider: React.FC<ProductProviderProps> = ({
           {} // Use empty filters for now
         );
 
-        if (response.status === "success" && response.data) {
-          console.log("Search products response:", response);
+        if (response.status === "success") {
+          console.log("🔍 Search products response:", response);
 
-          // Parse response - handle nested structure safely
-          const responseData = response.data.data as any;
-          const products = responseData?.products || responseData || [];
+          // Handle server response structure: {status, results, pagination, data: {products: []}}
+          const serverResponse = response as any;
+          const products = serverResponse.data?.products || [];
+          const pagination = serverResponse.pagination || {
+            page: 1,
+            limit: 12,
+            total: products.length,
+            pages: 1,
+          };
 
           dispatch({
             type: "SET_PRODUCTS",
             payload: {
               products,
-              pagination: response.data.pagination,
+              pagination,
             },
           });
         } else {

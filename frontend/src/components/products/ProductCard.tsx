@@ -1,7 +1,31 @@
-import React from "react";
+import React, { memo, useState, useCallback } from "react";
 import { Card, Button } from "@/components";
 import { formatCurrency } from "@/utils/helpers";
 import type { Product } from "@/types/product.types";
+
+// Memoized image component to prevent infinite loading
+const SafeProductImage = memo(({ src, alt }: { src: string; alt: string }) => {
+  const [imgSrc, setImgSrc] = useState(src || "/placeholder-food.svg");
+  const [hasErrored, setHasErrored] = useState(false);
+
+  const handleError = useCallback(() => {
+    if (!hasErrored) {
+      setHasErrored(true);
+      setImgSrc("/placeholder-food.svg");
+    }
+  }, [hasErrored]);
+
+  return (
+    <img
+      src={imgSrc}
+      alt={alt}
+      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+      onError={handleError}
+    />
+  );
+});
+
+SafeProductImage.displayName = "SafeProductImage";
 
 interface ProductCardProps {
   product: Product;
@@ -30,11 +54,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({
     <Card className="group overflow-hidden" hover>
       {/* Product Image */}
       <div className="aspect-4-3 overflow-hidden">
-        <img
-          src={product.images[0] || "/placeholder-food.jpg"}
-          alt={product.name}
-          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-        />
+        <SafeProductImage src={product.images[0]} alt={product.name} />
       </div>
 
       {/* Product Info */}
@@ -96,3 +116,6 @@ export const ProductCard: React.FC<ProductCardProps> = ({
     </Card>
   );
 };
+
+// Export as memoized component to prevent unnecessary re-renders
+export default memo(ProductCard);
