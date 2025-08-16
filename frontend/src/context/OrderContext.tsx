@@ -220,15 +220,23 @@ export const OrderProvider: React.FC<OrderProviderProps> = ({ children }) => {
     try {
       const response = await orderService.getOrder(orderId);
 
+      console.log("📦 OrderContext - loadOrder response:", response);
+
       if (response.status === "success" && response.data) {
-        dispatch({ type: "SET_CURRENT_ORDER", payload: response.data });
+        // Backend returns {status: 'success', data: {order: ...}}
+        const order = (response.data as any).order || response.data;
+        console.log("📦 OrderContext - loaded order:", order);
+
+        dispatch({ type: "SET_CURRENT_ORDER", payload: order });
       } else {
+        console.error("📦 OrderContext - loadOrder failed:", response);
         dispatch({
           type: "SET_ERROR",
           payload: response.message || "Failed to load order",
         });
       }
     } catch (error: any) {
+      console.error("📦 OrderContext - loadOrder error:", error);
       dispatch({
         type: "SET_ERROR",
         payload: error.message || "Failed to load order",

@@ -289,7 +289,7 @@ export const OrderDetails: React.FC = () => {
           </div>
         </div>
         <h1 className="text-3xl font-bold text-gray-900">
-          Order #{order._id.slice(-8)}
+          Order #{order._id?.slice(-8) || "Unknown"}
         </h1>
         <p className="text-gray-600 mt-1">
           Placed on {formatDate(order.createdAt)}

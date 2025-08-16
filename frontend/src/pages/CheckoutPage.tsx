@@ -25,7 +25,7 @@ export const CheckoutPage: React.FC = () => {
     district: "",
     ward: "",
     notes: "",
-    paymentMethod: "cash" as "cash" | "momo" | "banking",
+    paymentMethod: "cash" as "cash" | "bank_transfer",
   });
 
   const handleInputChange = (
@@ -250,20 +250,8 @@ export const CheckoutPage: React.FC = () => {
                   <input
                     type="radio"
                     name="paymentMethod"
-                    value="momo"
-                    checked={formData.paymentMethod === "momo"}
-                    onChange={handleInputChange}
-                    className="text-orange-600 focus:ring-orange-500"
-                  />
-                  <span className="ml-3">📱 MoMo Wallet</span>
-                </label>
-
-                <label className="flex items-center">
-                  <input
-                    type="radio"
-                    name="paymentMethod"
-                    value="banking"
-                    checked={formData.paymentMethod === "banking"}
+                    value="bank_transfer"
+                    checked={formData.paymentMethod === "bank_transfer"}
                     onChange={handleInputChange}
                     className="text-orange-600 focus:ring-orange-500"
                   />

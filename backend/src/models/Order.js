@@ -60,7 +60,7 @@ const orderSchema = new mongoose.Schema({
     payment: {
         method: {
             type: String,
-            enum: ['cash', 'momo', 'banking'],
+            enum: ['cash', 'bank_transfer'],
             default: 'cash'
         },
         status: {

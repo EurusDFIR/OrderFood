@@ -14,7 +14,7 @@ export interface Order {
   user: string;
   items: OrderItem[];
   totalAmount: number;
-  paymentMethod: 'cash' | 'momo' | 'banking';
+  paymentMethod: 'cash' | 'bank_transfer';
   paymentStatus: 'pending' | 'completed' | 'failed' | 'cancelled';
   orderStatus: 'pending' | 'preparing' | 'ready' | 'delivered' | 'cancelled';
   deliveryInfo: {
@@ -36,7 +36,7 @@ export interface CreateOrderRequest {
     phone?: string;
     notes?: string;
   };
-  paymentMethod: 'cash' | 'momo' | 'banking';
+  paymentMethod: 'cash' | 'bank_transfer';
   notes?: string;
   couponCode?: string;
 }
