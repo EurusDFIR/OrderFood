@@ -81,25 +81,25 @@ export const HomePage: React.FC = () => {
       icon: "🚀",
       title: "Giao hàng nhanh",
       description: "Trong vòng 30 phút tại nội thành",
-      color: "bg-blue-50 text-blue-600",
+      color: "bg-purple-50 text-purple-600",
     },
     {
       icon: "💎",
       title: "Chất lượng cao",
       description: "Đối tác nhà hàng uy tín, món ngon đảm bảo",
-      color: "bg-purple-50 text-purple-600",
+      color: "bg-purple-100 text-purple-700",
     },
     {
       icon: "💰",
       title: "Giá cả hợp lý",
       description: "Nhiều khuyến mãi, giá cạnh tranh",
-      color: "bg-green-50 text-green-600",
+      color: "bg-purple-200 text-purple-800",
     },
     {
       icon: "📱",
       title: "Theo dõi realtime",
       description: "Biết chính xác vị trí đơn hàng của bạn",
-      color: "bg-orange-50 text-orange-600",
+      color: "bg-purple-300 text-purple-900",
     },
   ];
 
@@ -116,7 +116,7 @@ export const HomePage: React.FC = () => {
       <ModernBanner />
 
       {/* Search Section */}
-      <section className="py-12 px-4 bg-gradient-to-br from-purple-50 to-blue-50">
+      <section className="py-12 px-4 bg-gradient-to-br from-purple-50 to-purple-100">
         <div className="container mx-auto max-w-4xl">
           <div className="text-center mb-8">
             <h2 className="text-3xl font-bold text-gray-800 mb-4">
@@ -165,7 +165,7 @@ export const HomePage: React.FC = () => {
           <div className="flex flex-wrap justify-center items-center gap-6 text-sm opacity-90 mt-6">
             <div className="flex items-center gap-2">
               <svg
-                className="w-4 h-4 text-green-500"
+                className="w-4 h-4 text-purple-500"
                 fill="currentColor"
                 viewBox="0 0 20 20"
               >
@@ -179,7 +179,7 @@ export const HomePage: React.FC = () => {
             </div>
             <div className="flex items-center gap-2">
               <svg
-                className="w-4 h-4 text-blue-500"
+                className="w-4 h-4 text-purple-600"
                 fill="currentColor"
                 viewBox="0 0 20 20"
               >
@@ -193,7 +193,7 @@ export const HomePage: React.FC = () => {
             </div>
             <div className="flex items-center gap-2">
               <svg
-                className="w-4 h-4 text-orange-500"
+                className="w-4 h-4 text-purple-700"
                 fill="currentColor"
                 viewBox="0 0 20 20"
               >
@@ -242,7 +242,7 @@ export const HomePage: React.FC = () => {
       </section>
 
       {/* Features Section */}
-      <section className="py-16 px-4 bg-gradient-to-br from-gray-50 to-blue-50">
+      <section className="py-16 px-4 bg-gradient-to-br from-purple-50 to-purple-100">
         <div className="container mx-auto max-w-6xl">
           <div className="text-center mb-12">
             <h2 className="text-4xl font-bold text-gray-800 mb-4">

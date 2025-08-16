@@ -23,9 +23,9 @@ const bannerSlides: BannerSlide[] = [
       "Khám phá hàng nghìn món ăn ngon từ khắp mọi miền. Đặt hàng dễ dàng, giao hàng tận nơi.",
     buttonText: "Khám phá ngay",
     buttonLink: "/products",
-    bgGradient: "from-purple-600 via-purple-500 to-blue-500",
-    image: "🍜",
-    accent: "bg-yellow-400",
+    bgGradient: "from-purple-600 via-purple-500 to-purple-700",
+    image: "https://images.unsplash.com/photo-1540189549336-e6e99c3679fe?w=800&h=600&fit=crop&auto=format&q=80",
+    accent: "bg-purple-400",
   },
   {
     id: 2,
@@ -35,9 +35,9 @@ const bannerSlides: BannerSlide[] = [
       "Đặt hàng online, giao hàng trong 30 phút. Thanh toán dễ dàng, theo dõi đơn hàng realtime.",
     buttonText: "Đặt hàng ngay",
     buttonLink: "/products",
-    bgGradient: "from-green-500 via-emerald-500 to-teal-500",
-    image: "🚚",
-    accent: "bg-orange-400",
+    bgGradient: "from-purple-700 via-purple-600 to-purple-800",
+    image: "https://images.unsplash.com/photo-1571091718767-18b5b1457add?w=800&h=600&fit=crop&auto=format&q=80",
+    accent: "bg-purple-300",
   },
   {
     id: 3,
@@ -47,9 +47,9 @@ const bannerSlides: BannerSlide[] = [
       "Khuyến mãi hấp dẫn cho thành viên mới. Tích điểm, đổi quà, nhận voucher miễn phí.",
     buttonText: "Xem ưu đãi",
     buttonLink: "/products?discount=true",
-    bgGradient: "from-pink-500 via-rose-500 to-orange-500",
-    image: "🎁",
-    accent: "bg-green-400",
+    bgGradient: "from-purple-800 via-purple-700 to-purple-900",
+    image: "https://images.unsplash.com/photo-1513475382585-d06e58bcb0e0?w=800&h=600&fit=crop&auto=format&q=80",
+    accent: "bg-purple-500",
   },
   {
     id: 4,
@@ -59,9 +59,9 @@ const bannerSlides: BannerSlide[] = [
       "Được chế biến bởi các chef chuyên nghiệp. Nguyên liệu tươi ngon, đảm bảo vệ sinh an toàn.",
     buttonText: "Thử ngay",
     buttonLink: "/products?popular=true",
-    bgGradient: "from-indigo-500 via-blue-500 to-cyan-500",
-    image: "👨‍🍳",
-    accent: "bg-red-400",
+    bgGradient: "from-purple-500 via-purple-600 to-purple-700",
+    image: "https://images.unsplash.com/photo-1414235077428-338989a2e8c0?w=800&h=600&fit=crop&auto=format&q=80",
+    accent: "bg-purple-200",
   },
 ];
 
@@ -111,7 +111,7 @@ export const ModernBanner: React.FC = () => {
 
   return (
     <div
-      className="relative h-[80vh] min-h-[600px] overflow-hidden rounded-3xl mx-4 my-8 shadow-2xl"
+      className="relative h-[50vh] min-h-[400px] overflow-hidden rounded-3xl mx-4 my-8 shadow-2xl"
       onMouseEnter={() => setIsAutoPlaying(false)}
       onMouseLeave={() => setIsAutoPlaying(true)}
     >
@@ -136,7 +136,7 @@ export const ModernBanner: React.FC = () => {
           {/* Content */}
           <div className="relative z-10 h-full flex items-center">
             <div className="container mx-auto px-6 lg:px-8">
-              <div className="grid lg:grid-cols-2 gap-12 items-center">
+              <div className="grid lg:grid-cols-2 gap-8 items-center">
                 {/* Text Content */}
                 <motion.div
                   className="text-center lg:text-left"
@@ -154,7 +154,7 @@ export const ModernBanner: React.FC = () => {
                   </motion.div>
 
                   <motion.h1
-                    className="text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-6 leading-tight"
+                    className="text-3xl md:text-4xl lg:text-5xl font-bold text-white mb-4 leading-tight"
                     initial={{ opacity: 0, y: 30 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: 0.3, duration: 0.6 }}
@@ -163,7 +163,7 @@ export const ModernBanner: React.FC = () => {
                   </motion.h1>
 
                   <motion.p
-                    className="text-xl text-white/90 mb-8 leading-relaxed max-w-lg mx-auto lg:mx-0"
+                    className="text-lg text-white/90 mb-6 leading-relaxed max-w-lg mx-auto lg:mx-0"
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: 0.5, duration: 0.6 }}
@@ -178,7 +178,7 @@ export const ModernBanner: React.FC = () => {
                   >
                     <Link
                       to={bannerSlides[currentSlide].buttonLink}
-                      className="inline-flex items-center px-8 py-4 bg-white text-gray-900 font-semibold rounded-2xl hover:bg-gray-100 transition-all duration-300 shadow-lg hover:shadow-xl hover:scale-105 group"
+                      className="inline-flex items-center px-8 py-3 bg-white text-purple-700 font-semibold rounded-2xl hover:bg-gray-100 transition-all duration-300 shadow-lg hover:shadow-xl hover:scale-105 group"
                     >
                       {bannerSlides[currentSlide].buttonText}
                       <motion.span className="ml-2 group-hover:translate-x-1 transition-transform duration-200">
@@ -188,7 +188,7 @@ export const ModernBanner: React.FC = () => {
                   </motion.div>
                 </motion.div>
 
-                {/* Image/Emoji */}
+                {/* Real Food Image */}
                 <motion.div
                   className="flex justify-center lg:justify-end"
                   initial={{ opacity: 0, scale: 0.8 }}
@@ -196,10 +196,19 @@ export const ModernBanner: React.FC = () => {
                   transition={{ delay: 0.4, duration: 0.6 }}
                 >
                   <motion.div
-                    className="text-[200px] md:text-[250px] lg:text-[300px] leading-none filter drop-shadow-2xl"
+                    className="relative w-64 h-64 md:w-80 md:h-80"
                     animate={floatingAnimation}
                   >
-                    {bannerSlides[currentSlide].image}
+                    <img
+                      src={bannerSlides[currentSlide].image}
+                      alt={bannerSlides[currentSlide].title}
+                      className="w-full h-full object-cover rounded-3xl shadow-2xl"
+                      onError={(e) => {
+                        const target = e.target as HTMLImageElement;
+                        target.src = "https://via.placeholder.com/400x400/8B5CF6/FFFFFF?text=Lena+Food";
+                      }}
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent rounded-3xl" />
                   </motion.div>
                 </motion.div>
               </div>
