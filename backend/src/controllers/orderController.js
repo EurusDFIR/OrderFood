@@ -339,6 +339,15 @@ exports.updateOrderStatus = asyncHandler(async (req, res, next) => {
   
   console.log(`🔍 Status update attempt: ${order.status} → ${status}, User: ${req.user.role}, Admin: ${isAdmin}`);
   
+  // Prevent duplicate status updates
+  if (order.status === status) {
+    return res.status(200).json({
+      status: 'success',
+      message: 'Trạng thái đã được cập nhật trước đó',
+      data: { order }
+    });
+  }
+  
   if (!isAdmin && !validTransitions[order.status]?.includes(status)) {
     return next(new AppError(`Không thể chuyển từ trạng thái ${order.status} sang ${status}`, 400));
   }

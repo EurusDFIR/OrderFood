@@ -15,11 +15,21 @@ exports.runAllAutomation = asyncHandler(async (req, res) => {
       errors: []
     };
 
-    // 1. Chuyển preparing -> ready (sau 30 phút)
+    // Debug: Kiểm tra tất cả đơn preparing
+    const allPreparingOrders = await Order.find({ status: 'preparing' });
+    console.log(`📊 Total preparing orders: ${allPreparingOrders.length}`);
+    allPreparingOrders.forEach(order => {
+      const timeDiff = (now - new Date(order.updatedAt)) / (1000 * 60);
+      console.log(`- ${order.orderNumber}: updated ${timeDiff.toFixed(1)} minutes ago`);
+    });
+
+    // 1. Chuyển preparing -> ready (sau 10 giây - để test)
     const preparingOrders = await Order.find({
       status: 'preparing',
-      updatedAt: { $lte: new Date(now - 30 * 60 * 1000) }
+      updatedAt: { $lte: new Date(now - 10 * 1000) }
     });
+    
+    console.log(`🔄 Orders eligible for ready: ${preparingOrders.length}`);
 
     for (const order of preparingOrders) {
       try {
