@@ -8,12 +8,28 @@ const AppError = require('../utils/AppError');
 // @route   POST /api/orders
 // @access  Private
 exports.createOrder = asyncHandler(async (req, res, next) => {
+  console.log("📦 createOrder called with body:", JSON.stringify(req.body, null, 2));
+  
   const {
     deliveryInfo,
     paymentMethod = 'cash',
     couponCode,
     notes
   } = req.body;
+
+  console.log("📦 Extracted data:", {
+    deliveryInfo,
+    paymentMethod,
+    couponCode,
+    notes,
+    userId: req.user._id
+  });
+
+  // Validate required fields
+  if (!deliveryInfo || !deliveryInfo.address) {
+    console.log("❌ Missing delivery info:", { deliveryInfo });
+    return next(new AppError('Thông tin giao hàng không hợp lệ', 400));
+  }
 
   // Lấy giỏ hàng
   const cart = await Cart.findOne({ user: req.user._id }).populate('items.product');

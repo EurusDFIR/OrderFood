@@ -31,19 +31,15 @@ export interface Order {
 }
 
 export interface CreateOrderRequest {
-  items: {
-    productId: string;
-    quantity: number;
-  }[];
-  paymentMethod: 'cash' | 'momo' | 'banking';
-  deliveryAddress: {
-    street: string;
-    city: string;
-    district: string;
-    ward: string;
-    phone: string;
+  deliveryInfo: {
+    recipientName?: string;
+    address: string;
+    phone?: string;
+    notes?: string;
   };
+  paymentMethod: 'cash' | 'momo' | 'banking';
   notes?: string;
+  couponCode?: string;
 }
 
 export interface OrderFilters {

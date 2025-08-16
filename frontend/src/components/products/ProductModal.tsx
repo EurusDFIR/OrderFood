@@ -35,9 +35,18 @@ export const ProductModal: React.FC<ProductModalProps> = ({
 
   const images = product.images || [];
   const displayImage =
-    images.length > selectedImageIndex
-      ? images[selectedImageIndex]
-      : images[0] || "/placeholder-food.svg";
+    images.length > 0 ? images[selectedImageIndex] || images[0] : null;
+
+  const hasValidImage =
+    displayImage && displayImage !== "/placeholder-food.svg";
+
+  console.log("🖼️ ProductModal images:", {
+    productImages: product.images,
+    imagesArray: images,
+    selectedIndex: selectedImageIndex,
+    displayImage,
+    hasValidImage,
+  });
 
   return (
     <Modal isOpen={isOpen} onClose={onClose} size="xl">

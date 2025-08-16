@@ -60,23 +60,22 @@ export const CheckoutPage: React.FC = () => {
 
       // Create order request
       const orderRequest: CreateOrderRequest = {
-        items: cart!.items.map((item) => ({
-          productId: item.product._id,
-          quantity: item.quantity,
-        })),
-        paymentMethod: formData.paymentMethod,
-        deliveryAddress: {
-          street: formData.street,
-          city: formData.city,
-          district: formData.district,
-          ward: formData.ward,
+        deliveryInfo: {
+          recipientName: formData.fullName,
+          address: `${formData.street}, ${formData.ward}, ${formData.district}, ${formData.city}`,
           phone: formData.phone,
+          notes: formData.notes || undefined,
         },
+        paymentMethod: formData.paymentMethod,
         notes: formData.notes || undefined,
       };
 
+      console.log("🛒 Creating order with data:", orderRequest);
+
       // Create the order
       const newOrder = await createOrder(orderRequest);
+
+      console.log("✅ Order created successfully:", newOrder);
 
       if (newOrder) {
         // Clear cart and navigate to order details
@@ -88,8 +87,12 @@ export const CheckoutPage: React.FC = () => {
         alert("Failed to create order. Please try again.");
       }
     } catch (error) {
-      console.error("Order creation failed:", error);
-      alert("An error occurred while placing your order. Please try again.");
+      console.error("❌ Order creation failed:", error);
+      if (error instanceof Error) {
+        alert(`Order failed: ${error.message}`);
+      } else {
+        alert("An error occurred while placing your order. Please try again.");
+      }
     } finally {
       setIsProcessing(false);
     }
