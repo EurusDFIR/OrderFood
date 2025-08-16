@@ -147,8 +147,10 @@ export const ProductsPage: React.FC = () => {
   );
 
   const handleViewDetails = useCallback((product: Product) => {
+    console.log("🔍 handleViewDetails called with product:", product.name);
     setSelectedProduct(product);
     setIsModalOpen(true);
+    console.log("🔍 Modal state set to open");
   }, []);
 
   const handleSearch = async (query: string) => {

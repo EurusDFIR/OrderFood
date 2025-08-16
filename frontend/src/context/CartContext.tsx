@@ -9,6 +9,7 @@ import type { ReactNode } from "react";
 import type { Cart, CartItem } from "@/types/cart.types";
 import { cartService } from "@/services/cartService";
 import { useAuth } from "@/context/AuthContext";
+import { useToast } from "@/context/ToastContext";
 
 // Cart State
 interface CartState {
@@ -107,25 +108,32 @@ interface CartProviderProps {
 export const CartProvider: React.FC<CartProviderProps> = ({ children }) => {
   const [state, dispatch] = useReducer(cartReducer, initialState);
   const { isAuthenticated } = useAuth();
+  const { showSuccess, showError } = useToast();
 
   // Load cart from server
   const loadCart = useCallback(async () => {
     if (!isAuthenticated) {
+      console.log("🛒 loadCart: User not authenticated, clearing cart");
       dispatch({ type: "CLEAR_CART" });
       return;
     }
 
+    console.log("🛒 loadCart: Loading cart for authenticated user");
     dispatch({ type: "SET_LOADING", payload: true });
     try {
       const response = await cartService.getCart();
+      console.log("🛒 loadCart response:", response);
 
       if (response.status === "success" && response.data) {
+        console.log("✅ Cart loaded successfully:", response.data);
         dispatch({ type: "SET_CART", payload: response.data });
       } else {
+        console.log("ℹ️ No existing cart, initializing empty cart");
         // If no cart exists, initialize empty cart state
         dispatch({ type: "CLEAR_CART" });
       }
     } catch (error: any) {
+      console.log("❌ Failed to load cart:", error);
       dispatch({
         type: "SET_ERROR",
         payload: error.message || "Failed to load cart",
@@ -136,7 +144,11 @@ export const CartProvider: React.FC<CartProviderProps> = ({ children }) => {
   // Add item to cart
   const addToCart = useCallback(
     async (productId: string, quantity: number = 1): Promise<boolean> => {
+      console.log("🛒 addToCart called with:", { productId, quantity, isAuthenticated });
+      
       if (!isAuthenticated) {
+        console.log("❌ User not authenticated");
+        showError("Vui lòng đăng nhập để thêm sản phẩm vào giỏ hàng");
         dispatch({
           type: "SET_ERROR",
           payload: "Please login to add items to cart",
@@ -146,12 +158,18 @@ export const CartProvider: React.FC<CartProviderProps> = ({ children }) => {
 
       dispatch({ type: "SET_LOADING", payload: true });
       try {
+        console.log("📤 Calling cartService.addToCart...");
         const response = await cartService.addToCart({ productId, quantity });
+        console.log("📥 Cart service response:", response);
 
         if (response.status === "success" && response.data) {
           dispatch({ type: "SET_CART", payload: response.data });
+          showSuccess("Đã thêm sản phẩm vào giỏ hàng!");
+          console.log("✅ Cart updated successfully:", response.data);
           return true;
         } else {
+          console.log("❌ Cart service failed:", response.message);
+          showError(response.message || "Không thể thêm sản phẩm vào giỏ hàng");
           dispatch({
             type: "SET_ERROR",
             payload: response.message || "Failed to add item to cart",
@@ -159,6 +177,8 @@ export const CartProvider: React.FC<CartProviderProps> = ({ children }) => {
           return false;
         }
       } catch (error: any) {
+        console.log("💥 Cart service error:", error);
+        showError("Có lỗi xảy ra khi thêm sản phẩm vào giỏ hàng");
         dispatch({
           type: "SET_ERROR",
           payload: error.message || "Failed to add item to cart",
@@ -166,7 +186,7 @@ export const CartProvider: React.FC<CartProviderProps> = ({ children }) => {
         return false;
       }
     },
-    [isAuthenticated]
+    [isAuthenticated, showSuccess, showError]
   );
 
   // Update cart item quantity
