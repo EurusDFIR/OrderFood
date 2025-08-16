@@ -33,15 +33,19 @@ export const ProductModal: React.FC<ProductModalProps> = ({
     onClose();
   };
 
-  const images = product.images || [];
+  const images = product.images || ((product as any).image ? [(product as any).image] : []);
   const displayImage =
     images.length > 0 ? images[selectedImageIndex] || images[0] : null;
 
   const hasValidImage =
-    displayImage && displayImage !== "/placeholder-food.svg";
+    displayImage && 
+    displayImage !== "/placeholder-food.svg" &&
+    displayImage !== "" &&
+    !displayImage.includes("data:image");
 
   console.log("🖼️ ProductModal images:", {
     productImages: product.images,
+    productImage: (product as any).image,
     imagesArray: images,
     selectedIndex: selectedImageIndex,
     displayImage,
@@ -55,30 +59,50 @@ export const ProductModal: React.FC<ProductModalProps> = ({
           {/* Product Images */}
           <div className="space-y-4">
             <div className="aspect-square bg-gray-100 rounded-lg overflow-hidden flex items-center justify-center">
-              {displayImage ? (
+              {hasValidImage ? (
                 <img
                   src={displayImage}
                   alt={product.name}
                   className="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
                   onError={(e) => {
-                    // Hide broken image completely
-                    e.currentTarget.style.display = "none";
+                    // Replace with fallback food image
+                    e.currentTarget.src = "https://images.unsplash.com/photo-1565299624946-b28f40a0ca4b?w=500&q=80";
+                    e.currentTarget.onerror = null; // Prevent infinite loop
                   }}
                 />
               ) : (
-                <div className="text-gray-400 text-center">
-                  <svg
-                    className="w-16 h-16 mx-auto mb-2"
-                    fill="currentColor"
-                    viewBox="0 0 20 20"
+                <div className="w-full h-full relative">
+                  <img
+                    src="https://images.unsplash.com/photo-1565299624946-b28f40a0ca4b?w=500&q=80"
+                    alt={product.name}
+                    className="w-full h-full object-cover"
+                    onError={(e) => {
+                      // Final fallback to SVG placeholder
+                      e.currentTarget.style.display = "none";
+                      const fallbackDiv = e.currentTarget.parentElement?.querySelector('.fallback-placeholder') as HTMLElement;
+                      if (fallbackDiv) {
+                        fallbackDiv.style.display = 'flex';
+                      }
+                    }}
+                  />
+                  <div className="fallback-placeholder absolute inset-0 items-center justify-center text-gray-400"
+                    style={{ display: 'none' }}
                   >
-                    <path
-                      fillRule="evenodd"
-                      d="M4 3a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V5a2 2 0 00-2-2H4zm12 12H4l4-8 3 6 2-4 3 6z"
-                      clipRule="evenodd"
-                    />
-                  </svg>
-                  <p className="text-sm">Không có hình ảnh</p>
+                    <div className="text-center">
+                      <svg
+                        className="w-16 h-16 mx-auto mb-2"
+                        fill="currentColor"
+                        viewBox="0 0 20 20"
+                      >
+                        <path
+                          fillRule="evenodd"
+                          d="M4 3a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V5a2 2 0 00-2-2H4zm12 12H4l4-8 3 6 2-4 3 6z"
+                          clipRule="evenodd"
+                        />
+                      </svg>
+                      <p className="text-sm">🍽️ {product.name}</p>
+                    </div>
+                  </div>
                 </div>
               )}
             </div>

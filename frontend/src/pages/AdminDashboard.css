@@ -16,7 +16,7 @@
 
 .admin-header h1 {
   margin: 0;
-  color: #2c3e50;
+  color: #064e3b;
   font-size: 28px;
   font-weight: 600;
 }
@@ -27,7 +27,7 @@
 }
 
 .automation-btn {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, #065f46 0%, #10b981 100%);
   color: white;
   border: none;
   padding: 10px 20px;
@@ -39,7 +39,7 @@
 
 .automation-btn:hover {
   transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.4);
 }
 
 .admin-nav {
@@ -62,13 +62,13 @@
 }
 
 .admin-nav button.active {
-  color: #667eea;
-  border-bottom-color: #667eea;
+  color: #065f46;
+  border-bottom-color: #065f46;
   background-color: #f8f9ff;
 }
 
 .admin-nav button:hover {
-  color: #667eea;
+  color: #065f46;
   background-color: #f8f9ff;
 }
 
@@ -111,7 +111,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, #065f46 0%, #10b981 100%);
   border-radius: 12px;
   color: white;
 }
@@ -128,7 +128,7 @@
 .stat-number {
   font-size: 32px;
   font-weight: 700;
-  color: #2c3e50;
+  color: #064e3b;
   margin: 0 0 4px 0;
 }
 
@@ -148,7 +148,7 @@
 
 .dashboard-section h3 {
   margin: 0 0 20px 0;
-  color: #2c3e50;
+  color: #064e3b;
   font-size: 20px;
   font-weight: 600;
 }
@@ -164,7 +164,7 @@
   padding: 15px;
   border-radius: 8px;
   text-align: center;
-  border-left: 4px solid #667eea;
+  border-left: 4px solid #065f46;
 }
 
 .status-label {
@@ -180,7 +180,7 @@
   display: block;
   font-size: 24px;
   font-weight: 700;
-  color: #2c3e50;
+  color: #064e3b;
 }
 
 .activities-list {
@@ -191,11 +191,11 @@
 
 .activity-group h4 {
   margin: 0 0 15px 0;
-  color: #2c3e50;
+  color: #064e3b;
   font-size: 16px;
   font-weight: 600;
   padding-bottom: 10px;
-  border-bottom: 2px solid #667eea;
+  border-bottom: 2px solid #065f46;
 }
 
 .activity-item {
@@ -263,7 +263,7 @@
 .product-name {
   flex: 1;
   font-weight: 500;
-  color: #2c3e50;
+  color: #064e3b;
 }
 
 .product-sold {
@@ -290,7 +290,7 @@
 
 .management-section h2 {
   margin: 0 0 20px 0;
-  color: #2c3e50;
+  color: #064e3b;
   font-size: 24px;
 }
 
@@ -407,7 +407,7 @@
   padding: 16px;
   background: #f8f9fa;
   border-radius: 8px;
-  border-left: 4px solid #667eea;
+  border-left: 4px solid #065f46;
   text-align: left;
 }
 
@@ -418,7 +418,7 @@
 }
 
 .goto-products-btn {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, #065f46 0%, #10b981 100%);
   color: white;
   border: none;
   padding: 16px 32px;
@@ -433,5 +433,5 @@
 
 .goto-products-btn:hover {
   transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+  box-shadow: 0 6px 20px rgba(16, 185, 129, 0.4);
 }
