@@ -81,11 +81,30 @@ const orderSchema = new mongoose.Schema({
             'confirmed',
             'preparing',
             'ready',
-            'delivering',
-            'completed',
+            'assigned_to_shipper',
+            'out_for_delivery',
+            'delivered',
             'cancelled'
         ],
         default: 'pending'
+    },
+
+    // Thông tin shipper
+    shipper: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User'
+    },
+    assignedAt: Date,
+    pickedUpAt: Date,
+    
+    // Theo dõi giao hàng
+    deliveryTracking: {
+        estimatedTime: Number, // phút
+        currentLocation: {
+            latitude: Number,
+            longitude: Number
+        },
+        deliveryNotes: String
     },
     //thong tin gia
 

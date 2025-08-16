@@ -36,12 +36,36 @@ const userSchema = new mongoose.Schema({
   },
   role: {
     type: String,
-    enum: ['user', 'admin'],
-    default: 'user'
+    enum: ['customer', 'shipper', 'admin'],
+    default: 'customer'
   },
   isActive: {
     type: Boolean,
     default: true
+  },
+  // Thông tin cho shipper
+  shipperInfo: {
+    vehicleType: {
+      type: String,
+      enum: ['motorbike', 'bicycle', 'car'],
+      required: function() { return this.role === 'shipper'; }
+    },
+    vehicleNumber: {
+      type: String,
+      required: function() { return this.role === 'shipper'; }
+    },
+    isAvailable: {
+      type: Boolean,
+      default: true
+    },
+    currentLocation: {
+      latitude: Number,
+      longitude: Number
+    },
+    deliveryRadius: {
+      type: Number, // km
+      default: 10
+    }
   }
 }, {
   timestamps: true

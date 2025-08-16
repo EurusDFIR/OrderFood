@@ -8,6 +8,13 @@ const {
   updateOrderStatus,
   getOrderStats
 } = require('../controllers/orderController');
+const {
+  autoMoveToReady,
+  autoAssignShippers,
+  updateDeliveryTracking,
+  updateOrderStatusByShipper,
+  runAllAutomation
+} = require('../controllers/automationController');
 const { protect, restrictTo } = require('../middleware/auth');
 const { body, param } = require('express-validator');
 const { validateRequest } = require('../middleware/validateRequest');
@@ -60,6 +67,15 @@ router.get('/my-orders', getMyOrders);
 
 // Cancel order route - Must be before /:id route to avoid conflicts
 router.put('/:id/cancel', orderIdValidation, cancelOrder);
+
+// Automation routes (admin only)
+router.post('/automation/prepare-to-ready', restrictTo('admin'), autoMoveToReady);
+router.post('/automation/assign-shippers', restrictTo('admin'), autoAssignShippers);
+router.post('/automation/run-all', restrictTo('admin'), runAllAutomation);
+
+// Shipper routes
+router.patch('/:id/delivery-tracking', updateDeliveryTracking);
+router.patch('/:id/shipper-status', updateOrderStatusByShipper);
 
 // Admin routes - Must be before /:id route to avoid conflicts
 router.get('/admin/all', (req, res, next) => {
