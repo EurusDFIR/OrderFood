@@ -23,9 +23,9 @@ const bannerSlides: BannerSlide[] = [
       "Khám phá hàng nghìn món ăn ngon từ khắp mọi miền. Đặt hàng dễ dàng, giao hàng tận nơi.",
     buttonText: "Khám phá ngay",
     buttonLink: "/products",
-    bgGradient: "from-purple-600 via-purple-500 to-purple-700",
+    bgGradient: "from-emerald-600 via-emerald-500 to-teal-600",
     image: "https://images.unsplash.com/photo-1540189549336-e6e99c3679fe?w=800&h=600&fit=crop&auto=format&q=80",
-    accent: "bg-purple-400",
+    accent: "bg-emerald-400",
   },
   {
     id: 2,
@@ -35,9 +35,9 @@ const bannerSlides: BannerSlide[] = [
       "Đặt hàng online, giao hàng trong 30 phút. Thanh toán dễ dàng, theo dõi đơn hàng realtime.",
     buttonText: "Đặt hàng ngay",
     buttonLink: "/products",
-    bgGradient: "from-purple-700 via-purple-600 to-purple-800",
+    bgGradient: "from-teal-600 via-cyan-600 to-blue-600",
     image: "https://images.unsplash.com/photo-1571091718767-18b5b1457add?w=800&h=600&fit=crop&auto=format&q=80",
-    accent: "bg-purple-300",
+    accent: "bg-teal-400",
   },
   {
     id: 3,
@@ -47,9 +47,9 @@ const bannerSlides: BannerSlide[] = [
       "Khuyến mãi hấp dẫn cho thành viên mới. Tích điểm, đổi quà, nhận voucher miễn phí.",
     buttonText: "Xem ưu đãi",
     buttonLink: "/products?discount=true",
-    bgGradient: "from-purple-800 via-purple-700 to-purple-900",
+    bgGradient: "from-green-600 via-emerald-600 to-teal-700",
     image: "https://images.unsplash.com/photo-1513475382585-d06e58bcb0e0?w=800&h=600&fit=crop&auto=format&q=80",
-    accent: "bg-purple-500",
+    accent: "bg-green-400",
   },
   {
     id: 4,
@@ -59,9 +59,9 @@ const bannerSlides: BannerSlide[] = [
       "Được chế biến bởi các chef chuyên nghiệp. Nguyên liệu tươi ngon, đảm bảo vệ sinh an toàn.",
     buttonText: "Thử ngay",
     buttonLink: "/products?popular=true",
-    bgGradient: "from-purple-500 via-purple-600 to-purple-700",
+    bgGradient: "from-slate-600 via-gray-600 to-emerald-700",
     image: "https://images.unsplash.com/photo-1414235077428-338989a2e8c0?w=800&h=600&fit=crop&auto=format&q=80",
-    accent: "bg-purple-200",
+    accent: "bg-slate-400",
   },
 ];
 
@@ -178,7 +178,7 @@ export const ModernBanner: React.FC = () => {
                   >
                     <Link
                       to={bannerSlides[currentSlide].buttonLink}
-                      className="inline-flex items-center px-8 py-3 bg-white text-purple-700 font-semibold rounded-2xl hover:bg-gray-100 transition-all duration-300 shadow-lg hover:shadow-xl hover:scale-105 group"
+                      className="inline-flex items-center px-8 py-3 bg-white text-emerald-700 font-semibold rounded-2xl hover:bg-gray-100 transition-all duration-300 shadow-lg hover:shadow-xl hover:scale-105 group"
                     >
                       {bannerSlides[currentSlide].buttonText}
                       <motion.span className="ml-2 group-hover:translate-x-1 transition-transform duration-200">

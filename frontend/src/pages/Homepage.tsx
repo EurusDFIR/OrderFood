@@ -81,25 +81,25 @@ export const HomePage: React.FC = () => {
       icon: "🚀",
       title: "Giao hàng nhanh",
       description: "Trong vòng 30 phút tại nội thành",
-      color: "bg-purple-50 text-purple-600",
+      color: "bg-emerald-50 text-emerald-600",
     },
     {
       icon: "💎",
       title: "Chất lượng cao",
       description: "Đối tác nhà hàng uy tín, món ngon đảm bảo",
-      color: "bg-purple-100 text-purple-700",
+      color: "bg-emerald-100 text-emerald-700",
     },
     {
       icon: "💰",
       title: "Giá cả hợp lý",
       description: "Nhiều khuyến mãi, giá cạnh tranh",
-      color: "bg-purple-200 text-purple-800",
+      color: "bg-emerald-200 text-emerald-800",
     },
     {
       icon: "📱",
       title: "Theo dõi realtime",
       description: "Biết chính xác vị trí đơn hàng của bạn",
-      color: "bg-purple-300 text-purple-900",
+      color: "bg-emerald-300 text-emerald-900",
     },
   ];
 
@@ -116,7 +116,7 @@ export const HomePage: React.FC = () => {
       <ModernBanner />
 
       {/* Search Section */}
-      <section className="py-12 px-4 bg-gradient-to-br from-purple-50 to-purple-100">
+      <section className="py-12 px-4 bg-gradient-to-br from-emerald-50 to-emerald-100">
         <div className="container mx-auto max-w-4xl">
           <div className="text-center mb-8">
             <h2 className="text-3xl font-bold text-gray-800 mb-4">
@@ -155,7 +155,7 @@ export const HomePage: React.FC = () => {
             />
             <button
               type="submit"
-              className="bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white px-8 py-4 rounded-xl font-semibold transition-all duration-200 hover:shadow-lg"
+              className="bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white px-8 py-4 rounded-xl font-semibold transition-all duration-200 hover:shadow-lg"
             >
               Tìm kiếm
             </button>
@@ -165,7 +165,7 @@ export const HomePage: React.FC = () => {
           <div className="flex flex-wrap justify-center items-center gap-6 text-sm opacity-90 mt-6">
             <div className="flex items-center gap-2">
               <svg
-                className="w-4 h-4 text-purple-500"
+                className="w-4 h-4 text-emerald-500"
                 fill="currentColor"
                 viewBox="0 0 20 20"
               >
@@ -179,7 +179,7 @@ export const HomePage: React.FC = () => {
             </div>
             <div className="flex items-center gap-2">
               <svg
-                className="w-4 h-4 text-purple-600"
+                className="w-4 h-4 text-emerald-600"
                 fill="currentColor"
                 viewBox="0 0 20 20"
               >
@@ -193,7 +193,7 @@ export const HomePage: React.FC = () => {
             </div>
             <div className="flex items-center gap-2">
               <svg
-                className="w-4 h-4 text-purple-700"
+                className="w-4 h-4 text-emerald-700"
                 fill="currentColor"
                 viewBox="0 0 20 20"
               >
@@ -242,7 +242,7 @@ export const HomePage: React.FC = () => {
       </section>
 
       {/* Features Section */}
-      <section className="py-16 px-4 bg-gradient-to-br from-purple-50 to-purple-100">
+      <section className="py-16 px-4 bg-gradient-to-br from-emerald-50 to-emerald-100">
         <div className="container mx-auto max-w-6xl">
           <div className="text-center mb-12">
             <h2 className="text-4xl font-bold text-gray-800 mb-4">
@@ -277,11 +277,11 @@ export const HomePage: React.FC = () => {
       </section>
 
       {/* Stats Section */}
-      <section className="py-16 px-4 bg-gradient-to-r from-purple-600 to-blue-600 text-white">
+      <section className="py-16 px-4 bg-gradient-to-r from-emerald-600 to-teal-600 text-white">
         <div className="container mx-auto max-w-6xl">
           <div className="text-center mb-12">
             <h2 className="text-4xl font-bold mb-4">Con số ấn tượng 📊</h2>
-            <p className="text-purple-100 text-lg">
+            <p className="text-emerald-100 text-lg">
               Niềm tin từ hàng ngàn khách hàng trên khắp cả nước
             </p>
           </div>
@@ -314,7 +314,7 @@ export const HomePage: React.FC = () => {
             {isAuthenticated ? (
               <Link
                 to="/products"
-                className="bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white px-8 py-4 rounded-xl font-semibold text-lg transition-all duration-200 hover:shadow-lg hover:-translate-y-1"
+                className="bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white px-8 py-4 rounded-xl font-semibold text-lg transition-all duration-200 hover:shadow-lg hover:-translate-y-1"
               >
                 Khám phá ngay 🍽️
               </Link>
@@ -322,13 +322,13 @@ export const HomePage: React.FC = () => {
               <>
                 <Link
                   to="/register"
-                  className="bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white px-8 py-4 rounded-xl font-semibold text-lg transition-all duration-200 hover:shadow-lg hover:-translate-y-1"
+                  className="bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white px-8 py-4 rounded-xl font-semibold text-lg transition-all duration-200 hover:shadow-lg hover:-translate-y-1"
                 >
                   Đăng ký ngay 📝
                 </Link>
                 <Link
                   to="/login"
-                  className="border-2 border-purple-600 text-purple-600 hover:bg-purple-600 hover:text-white px-8 py-4 rounded-xl font-semibold text-lg transition-all duration-200 hover:-translate-y-1"
+                  className="border-2 border-emerald-600 text-emerald-600 hover:bg-emerald-600 hover:text-white px-8 py-4 rounded-xl font-semibold text-lg transition-all duration-200 hover:-translate-y-1"
                 >
                   Đăng nhập 🔑
                 </Link>
