@@ -75,15 +75,17 @@ export const CheckoutPage: React.FC = () => {
       // Create the order
       const newOrder = await createOrder(orderRequest);
 
-      console.log("✅ Order created successfully:", newOrder);
+      console.log("✅ Order creation result:", newOrder);
 
       if (newOrder) {
+        console.log("✅ Order created successfully with ID:", newOrder._id);
         // Clear cart and navigate to order details
         clearCart();
         navigate(`/orders/${newOrder._id}`, {
           state: { message: "Order placed successfully!" },
         });
       } else {
+        console.error("❌ Order creation returned null");
         alert("Failed to create order. Please try again.");
       }
     } catch (error) {

@@ -156,10 +156,17 @@ export const OrderProvider: React.FC<OrderProviderProps> = ({ children }) => {
       try {
         const response = await orderService.createOrder(data);
 
+        console.log("📦 OrderContext - createOrder response:", response);
+
         if (response.status === "success" && response.data) {
-          dispatch({ type: "ADD_ORDER", payload: response.data });
-          return response.data;
+          // Backend returns {status: 'success', data: {order: ...}}
+          const order = (response.data as any).order || response.data;
+          console.log("📦 OrderContext - extracted order:", order);
+
+          dispatch({ type: "ADD_ORDER", payload: order });
+          return order;
         } else {
+          console.error("📦 OrderContext - createOrder failed:", response);
           dispatch({
             type: "SET_ERROR",
             payload: response.message || "Failed to create order",

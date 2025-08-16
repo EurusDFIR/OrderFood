@@ -362,18 +362,31 @@ export const OrderDetails: React.FC = () => {
             </h3>
             <div className="space-y-3">
               <div>
-                <span className="text-gray-600 block">Address</span>
+                <span className="text-gray-600 block">Recipient</span>
                 <span className="text-gray-900">
-                  {order.deliveryAddress.street}, {order.deliveryAddress.ward},
-                  {order.deliveryAddress.district}, {order.deliveryAddress.city}
+                  {order.deliveryInfo?.recipientName || "N/A"}
                 </span>
               </div>
               <div>
                 <span className="text-gray-600 block">Phone</span>
                 <span className="text-gray-900">
-                  {order.deliveryAddress.phone}
+                  {order.deliveryInfo?.phone || "N/A"}
                 </span>
               </div>
+              <div>
+                <span className="text-gray-600 block">Address</span>
+                <span className="text-gray-900">
+                  {order.deliveryInfo?.address || "N/A"}
+                </span>
+              </div>
+              {order.deliveryInfo?.notes && (
+                <div>
+                  <span className="text-gray-600 block">Notes</span>
+                  <span className="text-gray-900">
+                    {order.deliveryInfo.notes}
+                  </span>
+                </div>
+              )}
               {order.estimatedDeliveryTime && (
                 <div>
                   <span className="text-gray-600 block">

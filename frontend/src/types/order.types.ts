@@ -17,12 +17,11 @@ export interface Order {
   paymentMethod: 'cash' | 'momo' | 'banking';
   paymentStatus: 'pending' | 'completed' | 'failed' | 'cancelled';
   orderStatus: 'pending' | 'preparing' | 'ready' | 'delivered' | 'cancelled';
-  deliveryAddress: {
-    street: string;
-    city: string;
-    district: string;
-    ward: string;
+  deliveryInfo: {
+    recipientName: string;
     phone: string;
+    address: string;
+    notes?: string;
   };
   notes?: string;
   estimatedDeliveryTime?: string;

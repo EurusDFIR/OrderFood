@@ -27,7 +27,7 @@ const createOrderValidation = [
     .withMessage('Số điện thoại phải có 10-11 chữ số'),
   body('paymentMethod')
     .optional()
-    .isIn(['cash', 'card', 'bank_transfer'])
+    .isIn(['cash', 'momo', 'banking', 'card', 'bank_transfer'])
     .withMessage('Phương thức thanh toán không hợp lệ'),
   validateRequest
 ];
