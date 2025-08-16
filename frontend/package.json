@@ -1,7 +1,8 @@
 {
-  "name": "frontend",
+  "name": "lena-food-frontend",
+  "description": "Lena Food - Modern food delivery platform",
   "private": true,
-  "version": "0.0.0",
+  "version": "1.0.0",
   "type": "module",
   "scripts": {
     "dev": "vite",
@@ -13,6 +14,7 @@
     "@headlessui/react": "^2.2.7",
     "@types/react-router-dom": "^5.3.3",
     "axios": "^1.11.0",
+    "framer-motion": "^12.23.12",
     "react": "^19.1.1",
     "react-dom": "^19.1.1",
     "react-hot-toast": "^2.6.0",

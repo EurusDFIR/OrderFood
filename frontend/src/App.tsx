@@ -10,8 +10,8 @@ import { AdminRoute } from "@/components/auth/AdminRoute";
 
 // Pages
 import { HomePage } from "@/pages/Homepage";
-import { LoginPage } from "@/pages/auth/LoginPage";
-import { RegisterPage } from "@/pages/auth/RegisterPage";
+import ModernLoginPage from "@/pages/auth/ModernLoginPage";
+import ModernRegisterPage from "@/pages/auth/ModernRegisterPage";
 import { ProductsPage } from "@/pages/ProductsPage";
 import { CartPage } from "@/pages/CartPage";
 import { CheckoutPage } from "@/pages/CheckoutPage";
@@ -42,7 +42,7 @@ function App() {
                       path="/login"
                       element={
                         <ProtectedRoute requireAuth={false}>
-                          <LoginPage />
+                          <ModernLoginPage />
                         </ProtectedRoute>
                       }
                     />
@@ -50,7 +50,7 @@ function App() {
                       path="/register"
                       element={
                         <ProtectedRoute requireAuth={false}>
-                          <RegisterPage />
+                          <ModernRegisterPage />
                         </ProtectedRoute>
                       }
                     />

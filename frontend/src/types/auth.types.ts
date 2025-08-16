@@ -22,6 +22,13 @@ export interface RegisterData {
   phone?: string;
 }
 
+export interface RegisterCredentials {
+  name: string;
+  email: string;
+  password: string;
+  confirmPassword: string;
+}
+
 // Authentication Response Types
 export interface AuthResponse {
   user: User;

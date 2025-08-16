@@ -182,13 +182,15 @@ export const ProductProvider: React.FC<ProductProviderProps> = ({
         if (response.status === "success") {
           // Handle server response structure: {status, results, pagination, data: {data: products, pagination}}
           const serverResponse = response as any;
-          const products = serverResponse.data?.data || serverResponse.data?.products || [];
-          const pagination = serverResponse.data?.pagination || serverResponse.pagination || {
-            page: 1,
-            limit: 12,
-            total: products.length,
-            pages: 1,
-          };
+          const products =
+            serverResponse.data?.data || serverResponse.data?.products || [];
+          const pagination = serverResponse.data?.pagination ||
+            serverResponse.pagination || {
+              page: 1,
+              limit: 12,
+              total: products.length,
+              pages: 1,
+            };
 
           console.log(
             "✅ Parsed products:",

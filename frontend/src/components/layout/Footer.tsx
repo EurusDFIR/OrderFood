@@ -12,7 +12,7 @@ export const Footer: React.FC = () => {
           <div className="space-y-4">
             <div className="flex items-center space-x-2">
               <span className="text-2xl">🍕</span>
-              <span className="text-xl font-bold">OrderFood</span>
+              <span className="text-xl font-bold">Lena Food</span>
             </div>
             <p className="text-gray-400">
               Đặt món ăn trực tuyến nhanh chóng, tiện lợi với nhiều lựa chọn
@@ -104,7 +104,7 @@ export const Footer: React.FC = () => {
             <div className="space-y-2 text-gray-400">
               <p>📍 123 Đường ABC, Quận XYZ, TP.HCM</p>
               <p>📞 Hotline: 0123 456 789</p>
-              <p>✉️ Email: info@orderfood.com</p>
+              <p>✉️ Email: info@lenafood.com</p>
               <div className="flex space-x-4 mt-4">
                 <a
                   href="#"
@@ -131,7 +131,7 @@ export const Footer: React.FC = () => {
 
         {/* Bottom Bar */}
         <div className="border-t border-gray-800 mt-8 pt-6 text-center text-gray-400">
-          <p>&copy; {currentYear} OrderFood. Tất cả quyền được bảo lưu.</p>
+          <p>&copy; {currentYear} Lena Food. Tất cả quyền được bảo lưu.</p>
         </div>
       </div>
     </footer>
