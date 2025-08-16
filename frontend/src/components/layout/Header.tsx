@@ -18,11 +18,12 @@ export const Header: React.FC = () => {
       <div className="container mx-auto px-4">
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
-          <Link to="/" className="flex items-center space-x-2">
-            <span className="text-2xl">🍕</span>
-            <span className="text-xl font-bold text-primary-600">
-              Lena Food
-            </span>
+          <Link to="/" className="flex items-center space-x-3">
+            <img 
+              src="/lenaFood.png" 
+              alt="Lena Food" 
+              className="h-10 w-auto object-contain"
+            />
           </Link>
 
           {/* Navigation */}

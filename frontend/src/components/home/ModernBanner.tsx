@@ -24,7 +24,8 @@ const bannerSlides: BannerSlide[] = [
     buttonText: "Khám phá ngay",
     buttonLink: "/products",
     bgGradient: "from-emerald-600 via-emerald-500 to-teal-600",
-    image: "https://images.unsplash.com/photo-1540189549336-e6e99c3679fe?w=800&h=600&fit=crop&auto=format&q=80",
+    image:
+      "https://images.unsplash.com/photo-1540189549336-e6e99c3679fe?w=800&h=600&fit=crop&auto=format&q=80",
     accent: "bg-emerald-400",
   },
   {
@@ -36,7 +37,8 @@ const bannerSlides: BannerSlide[] = [
     buttonText: "Đặt hàng ngay",
     buttonLink: "/products",
     bgGradient: "from-teal-600 via-cyan-600 to-blue-600",
-    image: "https://images.unsplash.com/photo-1571091718767-18b5b1457add?w=800&h=600&fit=crop&auto=format&q=80",
+    image:
+      "https://images.unsplash.com/photo-1571091718767-18b5b1457add?w=800&h=600&fit=crop&auto=format&q=80",
     accent: "bg-teal-400",
   },
   {
@@ -48,7 +50,8 @@ const bannerSlides: BannerSlide[] = [
     buttonText: "Xem ưu đãi",
     buttonLink: "/products?discount=true",
     bgGradient: "from-green-600 via-emerald-600 to-teal-700",
-    image: "https://images.unsplash.com/photo-1513475382585-d06e58bcb0e0?w=800&h=600&fit=crop&auto=format&q=80",
+    image:
+      "https://images.unsplash.com/photo-1513475382585-d06e58bcb0e0?w=800&h=600&fit=crop&auto=format&q=80",
     accent: "bg-green-400",
   },
   {
@@ -60,7 +63,8 @@ const bannerSlides: BannerSlide[] = [
     buttonText: "Thử ngay",
     buttonLink: "/products?popular=true",
     bgGradient: "from-slate-600 via-gray-600 to-emerald-700",
-    image: "https://images.unsplash.com/photo-1414235077428-338989a2e8c0?w=800&h=600&fit=crop&auto=format&q=80",
+    image:
+      "https://images.unsplash.com/photo-1414235077428-338989a2e8c0?w=800&h=600&fit=crop&auto=format&q=80",
     accent: "bg-slate-400",
   },
 ];
@@ -205,7 +209,8 @@ export const ModernBanner: React.FC = () => {
                       className="w-full h-full object-cover rounded-3xl shadow-2xl"
                       onError={(e) => {
                         const target = e.target as HTMLImageElement;
-                        target.src = "https://via.placeholder.com/400x400/8B5CF6/FFFFFF?text=Lena+Food";
+                        target.src =
+                          "https://via.placeholder.com/400x400/8B5CF6/FFFFFF?text=Lena+Food";
                       }}
                     />
                     <div className="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent rounded-3xl" />
