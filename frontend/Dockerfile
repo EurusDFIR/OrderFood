@@ -1,4 +1,4 @@
-# Backend Dockerfile for Lena Food
+# Frontend Dockerfile for Lena Food
 FROM node:18-alpine
 
 # Set working directory
@@ -8,7 +8,7 @@ WORKDIR /app
 COPY package*.json ./
 
 # Install dependencies
-RUN npm ci --only=production
+RUN npm ci
 
 # Copy source code
 COPY . .
@@ -22,11 +22,7 @@ RUN chown -R nodejs:nodejs /app
 USER nodejs
 
 # Expose port
-EXPOSE 5000
+EXPOSE 3000
 
-# Health check
-HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
-    CMD curl -f http://localhost:5000/api/health || exit 1
-
-# Start the application
+# Start the development server
 CMD ["npm", "start"]

@@ -68,17 +68,23 @@ export const ProductModal: React.FC<ProductModalProps> = ({
                   onError={(e) => {
                     // Hide the image and show fallback
                     e.currentTarget.style.display = "none";
-                    const fallbackDiv = e.currentTarget.parentElement?.querySelector('.fallback-placeholder') as HTMLElement;
+                    const fallbackDiv =
+                      e.currentTarget.parentElement?.querySelector(
+                        ".fallback-placeholder"
+                      ) as HTMLElement;
                     if (fallbackDiv) {
-                      fallbackDiv.style.display = 'flex';
+                      fallbackDiv.style.display = "flex";
                     }
                   }}
                 />
               ) : null}
-              
+
               {/* Fallback placeholder - always present but hidden if image loads */}
-              <div className={`fallback-placeholder w-full h-full flex items-center justify-center text-emerald-600 ${hasValidImage ? 'absolute inset-0' : ''}`}
-                style={{ display: hasValidImage ? 'none' : 'flex' }}
+              <div
+                className={`fallback-placeholder w-full h-full flex items-center justify-center text-emerald-600 ${
+                  hasValidImage ? "absolute inset-0" : ""
+                }`}
+                style={{ display: hasValidImage ? "none" : "flex" }}
               >
                 <div className="text-center">
                   <div className="w-20 h-20 mx-auto mb-4 bg-emerald-200 rounded-full flex items-center justify-center">
@@ -91,7 +97,9 @@ export const ProductModal: React.FC<ProductModalProps> = ({
                     </svg>
                   </div>
                   <h3 className="font-medium text-lg mb-1">{product.name}</h3>
-                  <p className="text-sm text-emerald-500">🍽️ Món ngon đang chờ bạn</p>
+                  <p className="text-sm text-emerald-500">
+                    🍽️ Món ngon đang chờ bạn
+                  </p>
                 </div>
               </div>
             </div>
@@ -115,9 +123,9 @@ export const ProductModal: React.FC<ProductModalProps> = ({
                       className="w-full h-full object-cover"
                       onError={(e) => {
                         // Hide thumbnail if image fails to load
-                        const button = e.currentTarget.closest('button');
+                        const button = e.currentTarget.closest("button");
                         if (button) {
-                          button.style.display = 'none';
+                          button.style.display = "none";
                         }
                       }}
                     />

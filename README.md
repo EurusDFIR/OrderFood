@@ -1,69 +1,275 @@
-### **Sơ Lược Dự Án: Ứng Dụng Đặt Món Ăn**
+# 🍽️ Lena Food - Order Management System
 
-#### **1. Giới thiệu chung**
+> Hệ thống quản lý đặt món ăn trực tuyến với giao diện hiện đại và theme emerald green
 
-Đây là một ứng dụng web cho phép người dùng xem thực đơn, đặt món ăn và quản lý đơn hàng của mình. Ứng dụng được xây dựng theo kiến trúc Monolith để tối ưu hóa thời gian phát triển và đảm bảo sự đơn giản trong quản lý.
+## 🚀 Quick Start (Chạy ngay với Docker)
 
-#### **2. Công nghệ sử dụng**
+### Yêu cầu hệ thống
 
-| Thành phần   | Công nghệ                  | Chi tiết                                                                                                                                              |
-| :----------- | :------------------------- | :---------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **Backend**  | **Node.js, Express**       | Sử dụng Node.js làm nền tảng, với ExpressJS để xây dựng các API (Application Programming Interface) cho ứng dụng.                                     |
-| **Database** | **MongoDB, Mongoose**      | Sử dụng MongoDB làm cơ sở dữ liệu NoSQL để lưu trữ tất cả thông tin. Mongoose là thư viện giúp tương tác với MongoDB một cách dễ dàng và có cấu trúc. |
-| **Frontend** | **ReactJS**                | Sử dụng thư viện ReactJS để xây dựng giao diện người dùng (UI) tương tác, kết nối với Backend để lấy và gửi dữ liệu.                                  |
-| **Đóng gói** | **Docker, Docker Compose** | Sử dụng Docker để đóng gói toàn bộ ứng dụng (Backend, Frontend, Database) thành các container, đảm bảo môi trường phát triển nhất quán.               |
+- Docker Desktop (Windows/Mac) hoặc Docker Engine (Linux)
+- Git
 
-#### **3. Các chức năng chính**
+### Cài đặt và chạy
 
-Ứng dụng sẽ bao gồm các chức năng cốt lõi được chia thành các mô-đun chính như sau:
+```bash
+# 1. Clone repository
+git clone https://github.com/EurusDFIR/OrderFood.git
+cd OrderFood
 
-- **Mô-đun Người dùng (User)**
+# 2. Chạy toàn bộ ứng dụng với Docker
+docker-compose up -d
 
-  - **Đăng ký (Register):** Người dùng có thể tạo một tài khoản mới bằng cách cung cấp các thông tin cơ bản.
-  - **Đăng nhập (Login):** Người dùng có thể đăng nhập vào tài khoản của mình để truy cập các chức năng đặt món.
-  - **Thông tin:** Hệ thống lưu trữ các thông tin cơ bản của người dùng như tên, email, mật khẩu (đã được mã hóa).
+# 3. Đợi 2-3 phút để services khởi động xong, sau đó truy cập:
+# - Frontend: http://localhost:3000
+# - Backend API: http://localhost:5000
+# - MongoDB: localhost:27017
+```
 
-- **Mô-đun Sản phẩm (Product/Food)**
+### Tài khoản mặc định
 
-  - **Xem danh sách món ăn:** Người dùng có thể xem toàn bộ menu với thông tin chi tiết về từng món ăn.
-  - **Xem chi tiết món ăn:** Người dùng có thể xem thông tin chi tiết hơn về một món ăn cụ thể (tên, giá, mô tả).
-  - **Quản lý món ăn:** (Dành cho Admin - có thể mở rộng sau này) Hệ thống cho phép thêm, sửa, xóa các món ăn trong menu.
+- **Email**: hung@gmail.com
+- **Password**: hung123
+- **Role**: Admin
 
+## 📂 Cấu trúc dự án
 
+```
+OrderFood/
+├── frontend/                 # React + TypeScript frontend
+│   ├── src/
+│   │   ├── components/       # UI components
+│   │   ├── pages/           # Pages (Homepage, Products, Admin...)
+│   │   ├── context/         # React Context (Auth, Cart, Products...)
+│   │   └── utils/           # Utilities
+│   ├── Dockerfile
+│   └── package.json
+├── backend/                  # Node.js + Express API
+│   ├── src/
+│   │   ├── controllers/     # API controllers
+│   │   ├── models/          # MongoDB models
+│   │   ├── routes/          # API routes
+│   │   └── middleware/      # Auth, validation middleware
+│   ├── Dockerfile
+│   └── package.json
+├── mongodb-init/            # Database initialization
+├── docker-compose.yml       # Docker services configuration
+└── README.md
+```
 
+## 🎨 Features
 
+### ✨ Giao diện người dùng
 
+- **Modern UI**: Theme emerald green hiện đại
+- **Responsive**: Tối ưu cho mobile và desktop
+- **Banner**: Auto-sliding với hình ảnh thật
+- **Product Grid**: Hiển thị sản phẩm với filter và search
+- **Shopping Cart**: Quản lý giỏ hàng realtime
 
+### 🔐 Authentication & Authorization
 
-- **Mô-đun Đơn hàng (Order)**
+- **JWT Authentication**: Đăng nhập bảo mật
+- **Role-based Access**: Admin/User roles
+- **Protected Routes**: Bảo vệ admin pages
 
-  - **Đặt món ăn:** Người dùng có thể thêm các món ăn vào giỏ hàng và tạo một đơn hàng mới.
-  - **Lịch sử đơn hàng:** Người dùng có thể xem lại lịch sử các đơn hàng đã đặt của mình.
-  - **Chi tiết đơn hàng:** Hệ thống lưu trữ các thông tin chi tiết của đơn hàng như các món đã chọn, số lượng, địa điểm nhận hàng, và tổng số tiền.
-    Tracking trạng thái đơn hàng, admin quan ly don hang
+### 📦 Quản lý sản phẩm
 
-- **Mô-đun Thanh toán (Payment)**
+- **CRUD Operations**: Tạo, đọc, cập nhật, xóa sản phẩm
+- **Categories**: Phân loại món ăn (phở, bánh mì, cơm...)
+- **Image Handling**: Upload và hiển thị hình ảnh
+- **Stock Management**: Quản lý tồn kho
 
-  - **Tính toán tổng tiền:** Hệ thống tự động tính toán tổng số tiền của đơn hàng.
-  - **Áp dụng mã giảm giá:** Hỗ trợ nhập và xử lý mã giảm giá.
-  - **Thanh toán:** Tích hợp quy trình thanh toán (đơn giản).
+### 🛒 Đặt hàng & Thanh toán
 
--** module Shopping cart**
+- **Order Management**: Quản lý đơn hàng
+- **Payment Methods**: Tiền mặt, chuyển khoản
+- **Order Tracking**: Theo dõi trạng thái đơn hàng
+- **Delivery Info**: Thông tin giao hàng
 
-- Thêm/xóa sản phẩm vào cart
-- Cập nhật số lượng
-- Tính tổng tiền
-- Lưu cart state
-- **Mô-đun Liên hệ (Contact)**
-  - **Giao diện liên hệ:** Cung cấp một giao diện tĩnh hoặc form đơn giản để người dùng có thể gửi câu hỏi hoặc phản hồi.
+### 👨‍💼 Admin Dashboard
 
-#### **4. Cấu trúc ứng dụng**
+- **Statistics**: Thống kê doanh thu, đơn hàng
+- **Order Management**: Quản lý tất cả đơn hàng
+- **User Management**: Quản lý người dùng
+- **Product Management**: Quản lý sản phẩm
 
-Dự án được tổ chức thành hai phần chính, độc lập nhưng liên kết với nhau:
+## 🛠️ Development
 
-- **Backend:** Chứa toàn bộ logic nghiệp vụ và API, sử dụng kiến trúc Express/Node.js, được đóng gói trong một thư mục `backend/`.
-- **Frontend:** Chứa giao diện người dùng, được xây dựng bằng ReactJS và nằm trong thư mục `frontend/`.
+### Chạy trong Development Mode
 
-Cả hai thành phần này sẽ được khởi động và quản lý bởi Docker Compose.
+```bash
+# Chạy từng service riêng biệt (cho development)
 
-comment test by HungPro
+# Terminal 1: Database
+docker run --name lena-mongo -p 27017:27017 -d mongo:6.0
+
+# Terminal 2: Backend
+cd backend
+npm install
+npm run dev
+
+# Terminal 3: Frontend
+cd frontend
+npm install
+npm start
+```
+
+### Environment Variables
+
+#### Backend (.env)
+
+```env
+NODE_ENV=development
+PORT=5000
+MONGODB_URI=mongodb://localhost:27017/orderfood
+JWT_SECRET=your-super-secret-jwt-key
+FRONTEND_URL=http://localhost:3000
+```
+
+#### Frontend (.env)
+
+```env
+REACT_APP_API_URL=http://localhost:5000/api
+```
+
+## 🐳 Docker Commands
+
+```bash
+# Khởi động tất cả services
+docker-compose up -d
+
+# Xem logs
+docker-compose logs -f
+
+# Dừng tất cả services
+docker-compose down
+
+# Rebuild images
+docker-compose build --no-cache
+
+# Xóa volumes (reset database)
+docker-compose down -v
+```
+
+## 🌐 API Endpoints
+
+### Authentication
+
+- `POST /api/users/register` - Đăng ký
+- `POST /api/users/login` - Đăng nhập
+- `GET /api/users/profile` - Thông tin user
+
+### Products
+
+- `GET /api/products` - Danh sách sản phẩm
+- `GET /api/products/:id` - Chi tiết sản phẩm
+- `POST /api/products` - Tạo sản phẩm (admin)
+- `PUT /api/products/:id` - Cập nhật sản phẩm (admin)
+
+### Orders
+
+- `GET /api/orders/my` - Đơn hàng của user
+- `POST /api/orders` - Tạo đơn hàng
+- `GET /api/admin/orders` - Tất cả đơn hàng (admin)
+
+### Cart
+
+- `GET /api/cart` - Giỏ hàng hiện tại
+- `POST /api/cart/add` - Thêm vào giỏ hàng
+- `DELETE /api/cart/remove/:productId` - Xóa khỏi giỏ hàng
+
+## 🎯 Tech Stack
+
+### Frontend
+
+- **React 18** với TypeScript
+- **Tailwind CSS** cho styling
+- **Framer Motion** cho animations
+- **React Router** cho navigation
+- **Context API** cho state management
+
+### Backend
+
+- **Node.js** với Express.js
+- **MongoDB** với Mongoose ODM
+- **JWT** cho authentication
+- **bcrypt** cho password hashing
+- **multer** cho file uploads
+
+### DevOps
+
+- **Docker** & Docker Compose
+- **Multi-stage builds**
+- **Health checks**
+- **Volume persistence**
+
+## 🔧 Troubleshooting
+
+### Port đã được sử dụng
+
+```bash
+# Kiểm tra ports đang sử dụng
+netstat -tulpn | grep :3000
+netstat -tulpn | grep :5000
+
+# Hoặc thay đổi ports trong docker-compose.yml
+```
+
+### Database connection issues
+
+```bash
+# Reset database
+docker-compose down -v
+docker-compose up -d mongodb
+# Đợi 30 giây rồi chạy lại backend và frontend
+```
+
+### Frontend không kết nối được Backend
+
+- Kiểm tra `REACT_APP_API_URL` trong frontend/.env
+- Đảm bảo backend đang chạy trên đúng port
+
+## 📱 Screenshots
+
+### Homepage với Modern Banner
+
+- Auto-sliding banner với real food images
+- Search bar với gợi ý
+- Popular products grid
+
+### Product Details
+
+- High-quality product images
+- Detailed descriptions
+- Add to cart functionality
+
+### Admin Dashboard
+
+- Sales statistics
+- Order management
+- Product CRUD operations
+
+## 🤝 Contributing
+
+1. Fork repository
+2. Create feature branch (`git checkout -b feature/AmazingFeature`)
+3. Commit changes (`git commit -m 'Add AmazingFeature'`)
+4. Push to branch (`git push origin feature/AmazingFeature`)
+5. Open Pull Request
+
+## 📄 License
+
+Distributed under the MIT License. See `LICENSE` for more information.
+
+## 👨‍💻 Author
+
+**EurusDFIR**
+
+- GitHub: [@EurusDFIR](https://github.com/EurusDFIR)
+
+---
+
+<div align="center">
+  <h3>🍽️ Lena Food - Bringing delicious food to your doorstep</h3>
+  <p>Made with ❤️ and emerald green theme</p>
+</div>
