@@ -7,11 +7,11 @@ import { formatCurrency } from "@/utils/helpers";
 // Order status timeline component
 const OrderTimeline: React.FC<{ order: Order }> = ({ order }) => {
   const getStepStatus = (step: string) => {
-    const statusOrder = ["pending", "preparing", "ready", "delivered"];
-    const currentIndex = statusOrder.indexOf(order.orderStatus);
+    const statusOrder = ["pending", "preparing", "ready", "completed"];
+    const currentIndex = statusOrder.indexOf(order.status);
     const stepIndex = statusOrder.indexOf(step);
 
-    if (order.orderStatus === "cancelled") {
+    if (order.status === "cancelled") {
       return step === "pending" ? "completed" : "cancelled";
     }
 
@@ -33,7 +33,7 @@ const OrderTimeline: React.FC<{ order: Order }> = ({ order }) => {
     },
     { id: "ready", title: "Ready", description: "Food is ready for delivery" },
     {
-      id: "delivered",
+      id: "completed",
       title: "Delivered",
       description: "Order has been delivered",
     },
@@ -229,9 +229,9 @@ export const OrderDetails: React.FC = () => {
     }
   };
 
-  const canCancel = order.orderStatus === "pending";
+  const canCancel = order.status === "pending";
   const canReorder =
-    order.orderStatus === "delivered" || order.orderStatus === "cancelled";
+    order.status === "completed" || order.status === "cancelled";
 
   const formatDate = (date: string) => {
     return new Date(date).toLocaleString("en-US", {
@@ -333,23 +333,23 @@ export const OrderDetails: React.FC = () => {
               <div className="flex justify-between">
                 <span className="text-gray-600">Payment Method</span>
                 <span className="text-gray-900 capitalize">
-                  {order.paymentMethod}
+                  {order.payment?.method || "N/A"}
                 </span>
               </div>
               <div className="flex justify-between">
                 <span className="text-gray-600">Payment Status</span>
                 <span
                   className={`px-2 py-1 rounded-full text-xs font-medium ${
-                    order.paymentStatus === "completed"
+                    order.payment?.status === "paid"
                       ? "bg-green-100 text-green-800"
-                      : order.paymentStatus === "pending"
+                      : order.payment?.status === "pending"
                       ? "bg-yellow-100 text-yellow-800"
-                      : order.paymentStatus === "failed"
+                      : order.payment?.status === "failed"
                       ? "bg-red-100 text-red-800"
                       : "bg-gray-100 text-gray-800"
                   }`}
                 >
-                  {order.paymentStatus}
+                  {order.payment?.status || "N/A"}
                 </span>
               </div>
             </div>

@@ -10,18 +10,22 @@ interface OrderCardProps {
 }
 
 // Order status badge component
-const OrderStatusBadge: React.FC<{ status: Order["orderStatus"] }> = ({
+const OrderStatusBadge: React.FC<{ status: Order["status"] }> = ({
   status,
 }) => {
-  const getStatusColor = (status: Order["orderStatus"]) => {
+  const getStatusColor = (status: Order["status"]) => {
     switch (status) {
       case "pending":
         return "bg-yellow-100 text-yellow-800";
+      case "confirmed":
+        return "bg-blue-100 text-blue-800";
       case "preparing":
         return "bg-orange-100 text-orange-800";
       case "ready":
         return "bg-green-100 text-green-800";
-      case "delivered":
+      case "delivering":
+        return "bg-purple-100 text-purple-800";
+      case "completed":
         return "bg-green-100 text-green-800";
       case "cancelled":
         return "bg-red-100 text-red-800";
@@ -30,15 +34,19 @@ const OrderStatusBadge: React.FC<{ status: Order["orderStatus"] }> = ({
     }
   };
 
-  const getStatusText = (status: Order["orderStatus"]) => {
+  const getStatusText = (status: Order["status"]) => {
     switch (status) {
       case "pending":
         return "Pending";
+      case "confirmed":
+        return "Confirmed";
       case "preparing":
         return "Preparing";
       case "ready":
         return "Ready";
-      case "delivered":
+      case "delivering":
+        return "Delivering";
+      case "completed":
         return "Delivered";
       case "cancelled":
         return "Cancelled";
@@ -59,34 +67,30 @@ const OrderStatusBadge: React.FC<{ status: Order["orderStatus"] }> = ({
 };
 
 // Payment status badge component
-const PaymentStatusBadge: React.FC<{ status: Order["paymentStatus"] }> = ({
+const PaymentStatusBadge: React.FC<{ status: Order["payment"]["status"] }> = ({
   status,
 }) => {
-  const getPaymentStatusColor = (status: Order["paymentStatus"]) => {
+  const getPaymentStatusColor = (status: Order["payment"]["status"]) => {
     switch (status) {
       case "pending":
         return "bg-yellow-100 text-yellow-800";
-      case "completed":
+      case "paid":
         return "bg-green-100 text-green-800";
       case "failed":
         return "bg-red-100 text-red-800";
-      case "cancelled":
-        return "bg-gray-100 text-gray-800";
       default:
         return "bg-gray-100 text-gray-800";
     }
   };
 
-  const getPaymentStatusText = (status: Order["paymentStatus"]) => {
+  const getPaymentStatusText = (status: Order["payment"]["status"]) => {
     switch (status) {
       case "pending":
         return "Payment Pending";
-      case "completed":
+      case "paid":
         return "Paid";
       case "failed":
         return "Payment Failed";
-      case "cancelled":
-        return "Cancelled";
       default:
         return status;
     }
@@ -128,9 +132,9 @@ export const OrderCard: React.FC<OrderCardProps> = ({
     }
   };
 
-  const canCancel = order.orderStatus === "pending";
+  const canCancel = order.status === "pending";
   const canReorder =
-    order.orderStatus === "delivered" || order.orderStatus === "cancelled";
+    order.status === "completed" || order.status === "cancelled";
 
   const formatDate = (date: string) => {
     return new Date(date).toLocaleDateString("en-US", {
@@ -156,8 +160,8 @@ export const OrderCard: React.FC<OrderCardProps> = ({
           <p className="text-sm text-gray-500">{formatDate(order.createdAt)}</p>
         </div>
         <div className="flex flex-col items-end space-y-2">
-          <OrderStatusBadge status={order.orderStatus} />
-          <PaymentStatusBadge status={order.paymentStatus} />
+          <OrderStatusBadge status={order.status} />
+          <PaymentStatusBadge status={order.payment?.status || "pending"} />
         </div>
       </div>
 
@@ -184,18 +188,20 @@ export const OrderCard: React.FC<OrderCardProps> = ({
       </div>
 
       {/* Delivery Information */}
-      {order.deliveryAddress && (
+      {order.deliveryInfo && (
         <div className="mb-4 p-3 bg-gray-50 rounded-md">
           <h4 className="text-sm font-medium text-gray-900 mb-1">
             Delivery Address
           </h4>
-          <p className="text-sm text-gray-600">
-            {order.deliveryAddress.street}, {order.deliveryAddress.ward},{" "}
-            {order.deliveryAddress.district}, {order.deliveryAddress.city}
-          </p>
-          {order.deliveryAddress.phone && (
+          <p className="text-sm text-gray-600">{order.deliveryInfo.address}</p>
+          {order.deliveryInfo.recipientName && (
             <p className="text-sm text-gray-600">
-              Phone: {order.deliveryAddress.phone}
+              Recipient: {order.deliveryInfo.recipientName}
+            </p>
+          )}
+          {order.deliveryInfo.phone && (
+            <p className="text-sm text-gray-600">
+              Phone: {order.deliveryInfo.phone}
             </p>
           )}
         </div>

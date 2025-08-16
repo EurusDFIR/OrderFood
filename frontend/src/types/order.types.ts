@@ -14,9 +14,12 @@ export interface Order {
   user: string;
   items: OrderItem[];
   totalAmount: number;
-  paymentMethod: 'cash' | 'bank_transfer';
-  paymentStatus: 'pending' | 'completed' | 'failed' | 'cancelled';
-  orderStatus: 'pending' | 'preparing' | 'ready' | 'delivered' | 'cancelled';
+  payment: {
+    method: 'cash' | 'bank_transfer';
+    status: 'pending' | 'paid' | 'failed';
+    paidAt?: string;
+  };
+  status: 'pending' | 'confirmed' | 'preparing' | 'ready' | 'delivering' | 'completed' | 'cancelled';
   deliveryInfo: {
     recipientName: string;
     phone: string;
@@ -24,7 +27,7 @@ export interface Order {
     notes?: string;
   };
   notes?: string;
-  estimatedDeliveryTime?: string;
+  estimatedDelivery?: string;
   createdAt: string;
   updatedAt: string;
 }

@@ -245,13 +245,12 @@ export const OrdersPage: React.FC = () => {
                 key={order._id}
                 order={order}
                 onCancel={
-                  order.orderStatus === "pending"
+                  order.status === "pending"
                     ? () => handleCancelOrder(order._id)
                     : undefined
                 }
                 onReorder={
-                  order.orderStatus === "delivered" ||
-                  order.orderStatus === "cancelled"
+                  order.status === "completed" || order.status === "cancelled"
                     ? () => handleReorder(order._id)
                     : undefined
                 }
