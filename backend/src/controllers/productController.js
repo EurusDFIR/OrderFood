@@ -6,43 +6,61 @@ const { validationResult } = require('express-validator');
 // @access  Public
 exports.getAllProducts = async (req, res) => {
   try {
-    // Build query
-    const queryObj = { ...req.query };
-    const excludedFields = ['page', 'sort', 'limit', 'fields', 'search'];
-    excludedFields.forEach(el => delete queryObj[el]);
-
-    // Advanced filtering
-    let queryStr = JSON.stringify(queryObj);
-    queryStr = queryStr.replace(/\b(gte|gt|lte|lt)\b/g, match => `$${match}`);
-
-    let query = Product.find(JSON.parse(queryStr));
-
-    // Text search
-    if (req.query.search) {
-      query = query.find({
-        $text: { $search: req.query.search }
-      });
+    // Build base query with filters
+    let baseQuery = { isAvailable: true };
+    
+    // Handle filters
+    if (req.query.category && req.query.category !== 'all' && req.query.category !== '') {
+      baseQuery.category = req.query.category;
+    }
+    
+    if (req.query.minPrice || req.query.maxPrice) {
+      baseQuery.price = {};
+      if (req.query.minPrice) baseQuery.price.$gte = parseFloat(req.query.minPrice);
+      if (req.query.maxPrice) baseQuery.price.$lte = parseFloat(req.query.maxPrice);
+    }
+    
+    if (req.query.minRating) {
+      baseQuery['ratings.average'] = { $gte: parseFloat(req.query.minRating) };
     }
 
-    // Sorting
+    let query = Product.find(baseQuery);
+
+    // Advanced sorting
     if (req.query.sort) {
-      const sortBy = req.query.sort.split(',').join(' ');
-      query = query.sort(sortBy);
+      const sortOption = req.query.sort;
+      switch (sortOption) {
+        case 'price-asc':
+          query = query.sort({ price: 1 });
+          break;
+        case 'price-desc':
+          query = query.sort({ price: -1 });
+          break;
+        case 'name-asc':
+          query = query.sort({ name: 1 });
+          break;
+        case 'name-desc':
+          query = query.sort({ name: -1 });
+          break;
+        case 'rating-desc':
+          query = query.sort({ 'ratings.average': -1, 'ratings.count': -1 });
+          break;
+        case 'popular':
+          query = query.sort({ isPopular: -1, 'ratings.average': -1 });
+          break;
+        case 'newest':
+          query = query.sort({ createdAt: -1 });
+          break;
+        default:
+          query = query.sort({ createdAt: -1 });
+      }
     } else {
-      query = query.sort('-createdAt');
-    }
-
-    // Field limiting
-    if (req.query.fields) {
-      const fields = req.query.fields.split(',').join(' ');
-      query = query.select(fields);
-    } else {
-      query = query.select('-__v');
+      query = query.sort({ createdAt: -1 });
     }
 
     // Pagination
     const page = req.query.page * 1 || 1;
-    const limit = req.query.limit * 1 || 10;
+    const limit = req.query.limit * 1 || 12;
     const skip = (page - 1) * limit;
 
     query = query.skip(skip).limit(limit);
@@ -51,7 +69,7 @@ exports.getAllProducts = async (req, res) => {
     const products = await query;
     
     // Get total count for pagination
-    const totalProducts = await Product.countDocuments(JSON.parse(queryStr));
+    const totalProducts = await Product.countDocuments(baseQuery);
     const totalPages = Math.ceil(totalProducts / limit);
 
     res.status(200).json({
@@ -64,6 +82,13 @@ exports.getAllProducts = async (req, res) => {
         totalProducts,
         hasNextPage: page < totalPages,
         hasPrevPage: page > 1
+      },
+      appliedFilters: {
+        category: req.query.category || null,
+        minPrice: req.query.minPrice ? parseFloat(req.query.minPrice) : null,
+        maxPrice: req.query.maxPrice ? parseFloat(req.query.maxPrice) : null,
+        minRating: req.query.minRating ? parseFloat(req.query.minRating) : null,
+        sort: req.query.sort || 'newest'
       },
       data: {
         products
@@ -386,7 +411,7 @@ exports.deleteProduct = async (req, res) => {
 // @access  Public
 exports.searchProducts = async (req, res) => {
   try {
-    const query = req.query.q; // Changed from req.params.query to req.query.q
+    const query = req.query.q;
     
     if (!query) {
       return res.status(400).json({
@@ -396,50 +421,93 @@ exports.searchProducts = async (req, res) => {
     }
     
     const page = req.query.page * 1 || 1;
-    const limit = req.query.limit * 1 || 10;
+    const limit = req.query.limit * 1 || 12;
     const skip = (page - 1) * limit;
     
-    // Enhanced search with multiple fields and fuzzy matching
-    const searchWords = query.split(' ').filter(word => word.length > 0);
+    // Add filters support
+    const category = req.query.category;
+    const minPrice = req.query.minPrice ? parseFloat(req.query.minPrice) : null;
+    const maxPrice = req.query.maxPrice ? parseFloat(req.query.maxPrice) : null;
+    const minRating = req.query.minRating ? parseFloat(req.query.minRating) : null;
+    
+    // Vietnamese text normalization function
+    const normalizeVietnamese = (str) => {
+      return str
+        .toLowerCase()
+        .normalize('NFD')
+        .replace(/[\u0300-\u036f]/g, '') // Remove diacritics
+        .replace(/đ/g, 'd')
+        .replace(/Đ/g, 'd');
+    };
+    
+    const normalizedQuery = normalizeVietnamese(query);
+    const searchWords = normalizedQuery.split(' ').filter(word => word.length > 0);
+    
+    // Build comprehensive search with both original and normalized text
     const searchConditions = [];
     
-    // Exact phrase match
+    // Original search (with diacritics)
     searchConditions.push({
       $or: [
         { name: { $regex: query, $options: 'i' } },
         { description: { $regex: query, $options: 'i' } },
-        { category: { $regex: query, $options: 'i' } }
+        { category: { $regex: query, $options: 'i' } },
+        { tags: { $in: [new RegExp(query, 'i')] } }
       ]
     });
     
-    // Individual word matches
+    // Normalized search (without diacritics) - more flexible
     searchWords.forEach(word => {
-      searchConditions.push({
-        $or: [
-          { name: { $regex: word, $options: 'i' } },
-          { description: { $regex: word, $options: 'i' } },
-          { category: { $regex: word, $options: 'i' } },
-          { tags: { $in: [new RegExp(word, 'i')] } }
-        ]
-      });
+      if (word.length >= 2) { // Only search words with 2+ characters
+        searchConditions.push({
+          $or: [
+            { name: { $regex: word, $options: 'i' } },
+            { description: { $regex: word, $options: 'i' } },
+            { category: { $regex: word, $options: 'i' } },
+            { tags: { $in: [new RegExp(word, 'i')] } },
+            // Additional partial matching for Vietnamese
+            { name: { $regex: word.replace(/[aeiou]/g, '[aăâáàảãạăắằẳẵặâấầẩẫậ]')
+                                 .replace(/e/g, '[eêéèẻẽẹêếềểễệ]')
+                                 .replace(/i/g, '[iíìỉĩị]')
+                                 .replace(/o/g, '[oôơóòỏõọôốồổỗộơớờởỡợ]')
+                                 .replace(/u/g, '[uưúùủũụưứừửữự]')
+                                 .replace(/y/g, '[yýỳỷỹỵ]')
+                                 .replace(/d/g, '[dđ]'), $options: 'i' } }
+          ]
+        });
+      }
     });
 
-    const products = await Product.find({
+    // Build main query
+    const mainQuery = {
       $and: [
         { $or: searchConditions },
         { isAvailable: true }
       ]
-    })
+    };
+    
+    // Add filters
+    if (category && category !== 'all' && category !== '') {
+      mainQuery.$and.push({ category: category });
+    }
+
+    if (minPrice !== null || maxPrice !== null) {
+      const priceFilter = {};
+      if (minPrice !== null) priceFilter.$gte = minPrice;
+      if (maxPrice !== null) priceFilter.$lte = maxPrice;
+      mainQuery.$and.push({ price: priceFilter });
+    }
+
+    if (minRating !== null) {
+      mainQuery.$and.push({ 'ratings.average': { $gte: minRating } });
+    }
+
+    const products = await Product.find(mainQuery)
     .sort({ 'ratings.average': -1, name: 1 })
     .skip(skip)
     .limit(limit);
 
-    const totalProducts = await Product.countDocuments({
-      $and: [
-        { $or: searchConditions },
-        { isAvailable: true }
-      ]
-    });
+    const totalProducts = await Product.countDocuments(mainQuery);
 
     res.status(200).json({
       status: 'success',

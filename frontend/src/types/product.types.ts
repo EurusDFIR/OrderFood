@@ -20,11 +20,13 @@ export interface ProductFilters {
   minRating?: number;
   search?: string;
   isAvailable?: boolean;
+  sort?: string;
 }
 
 export interface ProductsQuery extends ProductFilters {
   page?: number;
   limit?: number;
+  sort?: string;
   sortBy?: 'name' | 'price' | 'createdAt';
   sortOrder?: 'asc' | 'desc';
 }

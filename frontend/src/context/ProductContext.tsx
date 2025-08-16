@@ -140,7 +140,10 @@ interface ProductContextType {
   loadProduct: (id: string) => Promise<void>;
   loadCategories: () => Promise<void>;
   loadFeaturedProducts: () => Promise<void>;
-  searchProducts: (query: string) => Promise<void>;
+  searchProducts: (
+    query: string,
+    additionalFilters?: ProductFilters
+  ) => Promise<void>;
   setFilters: (filters: ProductFilters) => void;
   clearFilters: () => void;
   setSearchQuery: (query: string) => void;
@@ -169,8 +172,7 @@ export const ProductProvider: React.FC<ProductProviderProps> = ({
         const queryParams = {
           page: 1,
           limit: 12,
-          ...state.filters, // Include current filters
-          ...params,
+          ...params, // Use passed params directly, no state.filters
         };
 
         console.log("📡 Calling API with:", queryParams);
@@ -215,7 +217,7 @@ export const ProductProvider: React.FC<ProductProviderProps> = ({
         });
       }
     },
-    [state.filters] // Include filters in dependencies
+    [] // Remove state.filters dependency
   );
 
   // Load single product
@@ -268,15 +270,16 @@ export const ProductProvider: React.FC<ProductProviderProps> = ({
 
   // Search products
   const searchProducts = useCallback(
-    async (query: string) => {
+    async (query: string, additionalFilters?: ProductFilters) => {
       dispatch({ type: "SET_LOADING", payload: true });
       dispatch({ type: "SET_SEARCH_QUERY", payload: query });
 
       try {
-        // Use current filters when searching
+        // Combine current filters with additional filters
+        const combinedFilters = { ...state.filters, ...additionalFilters };
         const response = await productService.searchProducts(
           query,
-          state.filters
+          combinedFilters
         );
 
         if (response.status === "success") {

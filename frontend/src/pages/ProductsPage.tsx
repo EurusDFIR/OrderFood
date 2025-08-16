@@ -6,7 +6,6 @@ import type { Product, ProductFilters } from "@/types/product.types";
 import { ProductModal } from "@/components/products/ProductModal";
 import { SearchBar } from "@/components/products/SearchBar";
 import { ProductFilter } from "@/components/products/ProductFilter";
-import { ProductCard } from "@/components/products/ProductCard";
 import { Button } from "@/components/common/Button";
 
 // Fallback image as data URL to avoid network requests
@@ -114,7 +113,7 @@ export const ProductsPage: React.FC = () => {
   // Initial load - only once on mount
   useEffect(() => {
     console.log("🎯 ProductsPage initial load");
-    loadProducts();
+    loadProducts(filters); // Use current filters
     loadCategories();
   }, []); // Empty deps to run only once
 
@@ -163,15 +162,15 @@ export const ProductsPage: React.FC = () => {
   const handleFiltersChange = async (newFilters: ProductFilters) => {
     setFilters(newFilters);
     if (urlSearchQuery.trim()) {
-      await searchProducts(urlSearchQuery);
+      await searchProducts(urlSearchQuery, newFilters);
     } else {
-      await loadProducts();
+      await loadProducts(newFilters);
     }
   };
 
   const handleClearFilters = () => {
     clearFilters();
-    loadProducts();
+    loadProducts({}); // Load with empty filters
   };
 
   // Wrapper for ProductModal's different interface
@@ -278,12 +277,25 @@ export const ProductsPage: React.FC = () => {
 
                 <div className="flex items-center gap-3">
                   <span className="text-sm text-gray-600">Sắp xếp:</span>
-                  <select className="border border-gray-300 rounded-lg px-3 py-2 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-orange-500">
-                    <option value="default">Mặc định</option>
+                  <select
+                    className="border border-gray-300 rounded-lg px-3 py-2 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-orange-500"
+                    onChange={(e) => {
+                      const sortValue = e.target.value;
+                      if (urlSearchQuery) {
+                        // If searching, use search with sort
+                        searchProducts(urlSearchQuery, { sort: sortValue });
+                      } else {
+                        // Normal product loading with sort
+                        loadProducts({ sort: sortValue });
+                      }
+                    }}
+                  >
+                    <option value="newest">Mới nhất</option>
                     <option value="price-asc">Giá: Thấp đến cao</option>
                     <option value="price-desc">Giá: Cao đến thấp</option>
                     <option value="popular">Phổ biến nhất</option>
-                    <option value="newest">Mới nhất</option>
+                    <option value="rating-desc">Đánh giá cao nhất</option>
+                    <option value="name-asc">Tên A-Z</option>
                   </select>
                 </div>
               </div>
