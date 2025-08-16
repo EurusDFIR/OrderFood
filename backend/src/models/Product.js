@@ -22,7 +22,7 @@ const productSchema = new mongoose.Schema({
     type: String,
     required: [true, 'Danh mục là bắt buộc'],
     enum: {
-      values: ['com', 'pho', 'bun', 'banh-mi', 'do-uong', 'trang-mieng', 'mon-chay', 'lau', 'nuong', 'khac'],
+      values: ['main-dish', 'appetizer', 'snack', 'beverage', 'dessert', 'com', 'pho', 'bun', 'banh-mi', 'do-uong', 'trang-mieng', 'mon-chay', 'lau', 'nuong', 'khac'],
       message: 'Danh mục không hợp lệ'
     }
   },
