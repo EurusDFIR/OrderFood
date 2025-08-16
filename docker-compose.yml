@@ -58,7 +58,6 @@ services:
       - /app/node_modules
     networks:
       - lena-food-network
-    command: npm start
 
 volumes:
   mongodb_data:
