@@ -197,7 +197,20 @@ export const OrderProvider: React.FC<OrderProviderProps> = ({ children }) => {
         const response = await orderService.getOrders(filters);
 
         if (response.status === "success" && response.data) {
-          dispatch({ type: "SET_ORDERS", payload: response.data });
+          // Backend returns { data: { orders: [...] }, pagination: {...} }
+          // We need to combine them for the reducer
+          dispatch({
+            type: "SET_ORDERS",
+            payload: {
+              orders: response.data.orders,
+              pagination: (response as any).pagination || {
+                page: 1,
+                limit: 10,
+                total: 0,
+                pages: 0,
+              },
+            },
+          });
         } else {
           dispatch({
             type: "SET_ERROR",

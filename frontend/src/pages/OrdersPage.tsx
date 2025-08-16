@@ -274,31 +274,31 @@ export const OrdersPage: React.FC = () => {
           )}
 
           {/* Pagination */}
-          {state.pagination.pages > 1 && (
+          {state.pagination && state.pagination.pages > 1 && (
             <div className="flex justify-center mt-8">
               <nav className="flex items-center space-x-2">
                 <button
                   onClick={() =>
                     loadOrders({
                       ...filters,
-                      page: Math.max(1, state.pagination.page - 1),
+                      page: Math.max(1, state.pagination?.page || 1),
                     })
                   }
-                  disabled={state.pagination.page === 1}
+                  disabled={state.pagination?.page === 1}
                   className="px-3 py-2 text-sm text-gray-500 hover:text-gray-700 disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   Previous
                 </button>
 
                 {Array.from(
-                  { length: state.pagination.pages },
+                  { length: state.pagination?.pages || 0 },
                   (_, i) => i + 1
                 ).map((page) => (
                   <button
                     key={page}
                     onClick={() => loadOrders({ ...filters, page })}
                     className={`px-3 py-2 text-sm rounded-md ${
-                      page === state.pagination.page
+                      page === state.pagination?.page
                         ? "bg-orange-600 text-white"
                         : "text-gray-700 hover:bg-gray-100"
                     }`}
@@ -312,12 +312,12 @@ export const OrdersPage: React.FC = () => {
                     loadOrders({
                       ...filters,
                       page: Math.min(
-                        state.pagination.pages,
-                        state.pagination.page + 1
+                        state.pagination?.pages || 1,
+                        (state.pagination?.page || 1) + 1
                       ),
                     })
                   }
-                  disabled={state.pagination.page === state.pagination.pages}
+                  disabled={state.pagination?.page === state.pagination?.pages}
                   className="px-3 py-2 text-sm text-gray-500 hover:text-gray-700 disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   Next
