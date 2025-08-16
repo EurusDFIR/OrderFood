@@ -229,7 +229,7 @@ export const OrderDetails: React.FC = () => {
     }
   };
 
-  const canCancel = order.status === "pending";
+  const canCancel = order.status === "pending" || order.status === "confirmed";
   const canReorder =
     order.status === "completed" || order.status === "cancelled";
 

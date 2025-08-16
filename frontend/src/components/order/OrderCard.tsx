@@ -132,7 +132,7 @@ export const OrderCard: React.FC<OrderCardProps> = ({
     }
   };
 
-  const canCancel = order.status === "pending";
+  const canCancel = order.status === "pending" || order.status === "confirmed";
   const canReorder =
     order.status === "completed" || order.status === "cancelled";
 
@@ -168,22 +168,24 @@ export const OrderCard: React.FC<OrderCardProps> = ({
       {/* Order Items Preview */}
       <div className="mb-4">
         <div className="flex flex-wrap gap-2 mb-2">
-          {order.items.slice(0, 3).map((item, index) => (
-            <div
-              key={index}
-              className="bg-gray-50 rounded-md px-3 py-1 text-sm text-gray-700"
-            >
-              {item.quantity}x {item.product.name}
-            </div>
-          ))}
-          {order.items.length > 3 && (
+          {order.items &&
+            order.items.slice(0, 3).map((item, index) => (
+              <div
+                key={index}
+                className="bg-gray-50 rounded-md px-3 py-1 text-sm text-gray-700"
+              >
+                {item.quantity}x {item.product?.name || "Unknown Product"}
+              </div>
+            ))}
+          {order.items && order.items.length > 3 && (
             <div className="bg-gray-50 rounded-md px-3 py-1 text-sm text-gray-500">
               +{order.items.length - 3} more
             </div>
           )}
         </div>
         <p className="text-sm text-gray-600">
-          {order.items.length} item{order.items.length !== 1 ? "s" : ""}
+          {order.items?.length || 0} item
+          {(order.items?.length || 0) !== 1 ? "s" : ""}
         </p>
       </div>
 

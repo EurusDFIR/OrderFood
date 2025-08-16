@@ -2,7 +2,7 @@ const express = require('express');
 const cors = require('cors');
 const dotenv = require('dotenv');
 const connectDB = require('./config/database');
-const AutomationScheduler = require('./services/AutomationScheduler');
+const AutomationScheduler = require('./services/SimpleAutomationScheduler');
 
 // Load environment variables
 dotenv.config();

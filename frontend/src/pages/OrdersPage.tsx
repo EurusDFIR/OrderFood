@@ -126,7 +126,12 @@ export const OrdersPage: React.FC = () => {
     setIsProcessing(null);
 
     if (newOrder) {
-      // Orders will be updated automatically through context
+      // Show success message
+      alert(
+        `Đặt lại đơn hàng thành công! Mã đơn hàng mới: ${newOrder.orderNumber}`
+      );
+      // Reset to page 1 and refresh to show new order at top
+      await loadOrders({ page: 1, limit: 10, ...filters });
     }
   };
 
@@ -245,7 +250,7 @@ export const OrdersPage: React.FC = () => {
                 key={order._id}
                 order={order}
                 onCancel={
-                  order.status === "pending"
+                  order.status === "pending" || order.status === "confirmed"
                     ? () => handleCancelOrder(order._id)
                     : undefined
                 }

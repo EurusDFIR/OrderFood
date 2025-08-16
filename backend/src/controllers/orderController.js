@@ -242,9 +242,7 @@ exports.cancelOrder = asyncHandler(async (req, res, next) => {
   res.status(200).json({
     status: 'success',
     message: 'Đơn hàng đã được hủy thành công',
-    data: {
-      order
-    }
+    data: order
   });
 });
 
@@ -435,5 +433,106 @@ exports.getOrderStats = asyncHandler(async (req, res) => {
       monthly: monthlyStats[0] || { totalOrders: 0, totalRevenue: 0 },
       byStatus: statusStats
     }
+  });
+});
+
+// @desc    Đặt lại đơn hàng (reorder)
+// @route   POST /api/orders/:id/reorder
+// @access  Private
+exports.reorderOrder = asyncHandler(async (req, res, next) => {
+  console.log('🔄 REORDER FUNCTION CALLED');
+  console.log('Order ID:', req.params.id);
+  console.log('User:', req.user._id);
+  
+  const { id } = req.params;
+
+  // Tìm đơn hàng gốc
+  const originalOrder = await Order.findById(id).populate('items.product');
+  
+  if (!originalOrder) {
+    console.log('❌ Original order not found');
+    return next(new AppError('Không tìm thấy đơn hàng', 404));
+  }
+
+  console.log('📦 Found original order:', originalOrder.orderNumber);
+
+  // Kiểm tra quyền truy cập (chỉ user sở hữu hoặc admin)
+  if (originalOrder.user.toString() !== req.user._id.toString() && req.user.role !== 'admin') {
+    console.log('❌ Access denied for user:', req.user._id);
+    return next(new AppError('Không có quyền truy cập đơn hàng này', 403));
+  }
+
+  console.log('✅ Access granted, checking products...');
+
+  // Kiểm tra tính khả dụng của sản phẩm
+  const unavailableItems = [];
+  const availableItems = [];
+
+  for (const item of originalOrder.items) {
+    const product = await Product.findById(item.product._id);
+    if (!product || !product.isAvailable) {
+      unavailableItems.push(item.product.name);
+    } else {
+      availableItems.push({
+        product: {
+          _id: item.product._id,
+          name: product.name,
+          price: product.price,
+          image: product.image
+        },
+        name: product.name, // Thêm field name cho Order model
+        quantity: item.quantity,
+        price: product.price,
+        image: product.image
+      });
+    }
+  }
+
+  if (availableItems.length === 0) {
+    return next(new AppError('Tất cả sản phẩm trong đơn hàng không còn khả dụng', 400));
+  }
+
+  // Tính toán giá mới
+  const itemsPrice = availableItems.reduce((total, item) => total + (item.price * item.quantity), 0);
+  const deliveryFee = itemsPrice >= 200000 ? 0 : 15000;
+  const totalAmount = itemsPrice + deliveryFee;
+
+  // Tạo số đơn hàng mới
+  const orderCount = await Order.countDocuments();
+  const orderNumber = `OF${new Date().toISOString().slice(0, 10).replace(/-/g, '')}${(orderCount + 1).toString().padStart(3, '0')}`;
+
+  // Tạo đơn hàng mới
+  const newOrder = await Order.create({
+    user: req.user._id,
+    orderNumber,
+    items: availableItems,
+    deliveryInfo: originalOrder.deliveryInfo,
+    paymentMethod: originalOrder.paymentMethod,
+    itemsPrice,
+    deliveryFee,
+    totalAmount,
+    notes: `Đặt lại từ đơn hàng ${originalOrder.orderNumber}`,
+    status: 'pending'
+  });
+
+  console.log('💾 Order saved to database:', newOrder._id);
+
+  await newOrder.populate('user', 'name email phone');
+
+  console.log('✅ New order created:', newOrder.orderNumber);
+  console.log('Unavailable items:', unavailableItems);
+
+  let message = 'Đặt lại đơn hàng thành công';
+  if (unavailableItems.length > 0) {
+    message += `. Lưu ý: Một số sản phẩm không còn khả dụng: ${unavailableItems.join(', ')}`;
+  }
+
+  console.log('📤 Sending response...');
+
+  res.status(201).json({
+    status: 'success',
+    message,
+    data: newOrder,
+    unavailableItems
   });
 });

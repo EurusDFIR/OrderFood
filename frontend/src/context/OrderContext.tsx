@@ -308,14 +308,18 @@ export const OrderProvider: React.FC<OrderProviderProps> = ({ children }) => {
   // Reorder
   const reorder = useCallback(
     async (orderId: string): Promise<Order | null> => {
+      console.log("🔄 Frontend reorder called for order:", orderId);
       dispatch({ type: "SET_LOADING", payload: true });
       try {
         const response = await orderService.reorder(orderId);
+        console.log("📤 Reorder response:", response);
 
         if (response.status === "success" && response.data) {
+          console.log("✅ Adding new order to context:", response.data);
           dispatch({ type: "ADD_ORDER", payload: response.data });
           return response.data;
         } else {
+          console.log("❌ Reorder failed:", response.message);
           dispatch({
             type: "SET_ERROR",
             payload: response.message || "Failed to reorder",
@@ -323,6 +327,7 @@ export const OrderProvider: React.FC<OrderProviderProps> = ({ children }) => {
           return null;
         }
       } catch (error: any) {
+        console.log("❌ Reorder error:", error);
         dispatch({
           type: "SET_ERROR",
           payload: error.message || "Failed to reorder",
