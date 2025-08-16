@@ -33,7 +33,7 @@ const OrderFilters: React.FC<{
           <select
             value={filters.status || "all"}
             onChange={(e) => handleStatusChange(e.target.value)}
-            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
+            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
           >
             <option value="all">All Status</option>
             <option value="pending">Pending</option>
@@ -52,7 +52,7 @@ const OrderFilters: React.FC<{
           <select
             value={filters.paymentStatus || "all"}
             onChange={(e) => handlePaymentStatusChange(e.target.value)}
-            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
+            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
           >
             <option value="all">All Payments</option>
             <option value="pending">Pending</option>
@@ -76,7 +76,7 @@ const OrderFilters: React.FC<{
                 startDate: e.target.value || undefined,
               })
             }
-            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
+            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
           />
         </div>
 
@@ -93,7 +93,7 @@ const OrderFilters: React.FC<{
                 endDate: e.target.value || undefined,
               })
             }
-            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
+            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
           />
         </div>
       </div>
@@ -147,7 +147,7 @@ export const OrdersPage: React.FC = () => {
     return (
       <div className="max-w-6xl mx-auto px-4 py-8">
         <div className="flex justify-center items-center min-h-64">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-orange-600"></div>
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-emerald-600"></div>
         </div>
       </div>
     );
@@ -166,7 +166,7 @@ export const OrdersPage: React.FC = () => {
         {hasActiveFilters && (
           <button
             onClick={clearFilters}
-            className="text-orange-600 hover:text-orange-700 font-medium transition-colors"
+            className="text-emerald-600 hover:text-emerald-700 font-medium transition-colors"
           >
             Clear Filters
           </button>
@@ -228,14 +228,14 @@ export const OrdersPage: React.FC = () => {
           {hasActiveFilters ? (
             <button
               onClick={clearFilters}
-              className="bg-orange-600 text-white px-6 py-3 rounded-md hover:bg-orange-700 transition-colors"
+              className="bg-emerald-600 text-white px-6 py-3 rounded-md hover:bg-emerald-700 transition-colors"
             >
               Clear Filters
             </button>
           ) : (
             <a
               href="/products"
-              className="bg-orange-600 text-white px-6 py-3 rounded-md hover:bg-orange-700 transition-colors inline-block"
+              className="bg-emerald-600 text-white px-6 py-3 rounded-md hover:bg-emerald-700 transition-colors inline-block"
             >
               Browse Menu
             </a>
@@ -268,7 +268,7 @@ export const OrdersPage: React.FC = () => {
             <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
               <div className="bg-white rounded-lg p-6 max-w-sm w-full mx-4">
                 <div className="flex items-center">
-                  <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-orange-600 mr-3"></div>
+                  <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-emerald-600 mr-3"></div>
                   <span className="text-gray-900">
                     Processing your request...
                   </span>
@@ -303,7 +303,7 @@ export const OrdersPage: React.FC = () => {
                     onClick={() => loadOrders({ ...filters, page })}
                     className={`px-3 py-2 text-sm rounded-md ${
                       page === state.pagination?.page
-                        ? "bg-orange-600 text-white"
+                        ? "bg-emerald-600 text-white"
                         : "text-gray-700 hover:bg-gray-100"
                     }`}
                   >
@@ -336,7 +336,7 @@ export const OrdersPage: React.FC = () => {
       {state.isLoading && state.orders.length > 0 && (
         <div className="fixed bottom-4 right-4 bg-white rounded-lg shadow-lg p-4 border border-gray-200">
           <div className="flex items-center">
-            <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-orange-600 mr-2"></div>
+            <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-emerald-600 mr-2"></div>
             <span className="text-sm text-gray-600">Updating orders...</span>
           </div>
         </div>

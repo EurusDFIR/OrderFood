@@ -15,6 +15,14 @@ yarn.lock
 backend/.env
 frontend/.env
 
+# Temporary and test files
+**/test-*.js
+**/test-*.tsx
+**/*_new.tsx
+**/*New.tsx
+**/testRoutes.js
+test-api.sh
+
 # Logs
 logs
 *.log

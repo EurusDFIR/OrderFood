@@ -107,7 +107,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({
         {/* Stock Warning */}
         {product.isAvailable && product.stock > 0 && product.stock <= 5 && (
           <div className="mt-2">
-            <span className="text-orange-600 text-xs">
+            <span className="text-emerald-600 text-xs">
               ⚠️ Chỉ còn {product.stock} món
             </span>
           </div>

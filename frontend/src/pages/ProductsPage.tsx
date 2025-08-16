@@ -246,7 +246,7 @@ export const ProductsPage: React.FC = () => {
                 <h3 className="text-lg font-semibold text-gray-900">Bộ lọc</h3>
                 <button
                   onClick={handleClearFilters}
-                  className="text-orange-600 hover:text-orange-700 text-sm font-medium"
+                  className="text-emerald-600 hover:text-emerald-700 text-sm font-medium"
                 >
                   Xóa bộ lọc
                 </button>
@@ -271,7 +271,7 @@ export const ProductsPage: React.FC = () => {
                     {safeProducts.length} sản phẩm
                   </span>
                   {urlSearchQuery && (
-                    <span className="bg-orange-100 text-orange-800 px-3 py-1 rounded-full text-sm">
+                    <span className="bg-emerald-100 text-emerald-800 px-3 py-1 rounded-full text-sm">
                       Kết quả cho: {urlSearchQuery}
                     </span>
                   )}
@@ -280,7 +280,7 @@ export const ProductsPage: React.FC = () => {
                 <div className="flex items-center gap-3">
                   <span className="text-sm text-gray-600">Sắp xếp:</span>
                   <select
-                    className="border border-gray-300 rounded-lg px-3 py-2 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-orange-500"
+                    className="border border-gray-300 rounded-lg px-3 py-2 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-emerald-500"
                     onChange={(e) => {
                       const sortValue = e.target.value;
                       if (urlSearchQuery) {
@@ -352,7 +352,7 @@ export const ProductsPage: React.FC = () => {
                       return (
                         <div
                           key={product._id}
-                          className="group bg-white rounded-xl border border-gray-200 hover:border-orange-300 hover:shadow-lg transition-all duration-300 overflow-hidden cursor-pointer"
+                          className="group bg-white rounded-xl border border-gray-200 hover:border-emerald-300 hover:shadow-lg transition-all duration-300 overflow-hidden cursor-pointer"
                           onClick={() => handleViewDetails(product)}
                         >
                           {/* Product Image */}
@@ -369,7 +369,7 @@ export const ProductsPage: React.FC = () => {
                                 </div>
                               )}
                             {productData.isPopular && (
-                              <div className="absolute top-3 right-3 bg-orange-500 text-white px-2 py-1 rounded-full text-xs font-bold">
+                              <div className="absolute top-3 right-3 bg-emerald-500 text-white px-2 py-1 rounded-full text-xs font-bold">
                                 🔥 Hot
                               </div>
                             )}
@@ -377,7 +377,7 @@ export const ProductsPage: React.FC = () => {
 
                           {/* Product Info */}
                           <div className="p-4">
-                            <h3 className="font-bold text-gray-900 mb-2 line-clamp-2 group-hover:text-orange-600 transition-colors">
+                            <h3 className="font-bold text-gray-900 mb-2 line-clamp-2 group-hover:text-emerald-600 transition-colors">
                               {product.name}
                             </h3>
 
@@ -421,7 +421,7 @@ export const ProductsPage: React.FC = () => {
                             {/* Price and Actions */}
                             <div className="flex items-center justify-between">
                               <div className="flex items-center gap-2">
-                                <span className="text-xl font-bold text-orange-600">
+                                <span className="text-xl font-bold text-emerald-600">
                                   {formatCurrency(
                                     productData.finalPrice || product.price
                                   )}
@@ -440,7 +440,7 @@ export const ProductsPage: React.FC = () => {
                                     e.stopPropagation(); // Prevent triggering card click
                                     handleAddToCart(product);
                                   }}
-                                  className="bg-orange-500 hover:bg-orange-600 text-white px-4 py-2 rounded-lg font-medium transition-colors"
+                                  className="bg-emerald-500 hover:bg-emerald-600 text-white px-4 py-2 rounded-lg font-medium transition-colors"
                                 >
                                   Thêm
                                 </button>

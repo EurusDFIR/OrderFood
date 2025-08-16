@@ -92,7 +92,7 @@ export const ProductModal: React.FC<ProductModalProps> = ({
                     onClick={() => setSelectedImageIndex(index)}
                     className={`flex-shrink-0 w-16 h-16 rounded-md overflow-hidden border-2 ${
                       selectedImageIndex === index
-                        ? "border-orange-500"
+                        ? "border-emerald-500"
                         : "border-gray-200"
                     }`}
                   >
@@ -129,7 +129,7 @@ export const ProductModal: React.FC<ProductModalProps> = ({
 
             {/* Price */}
             <div className="flex items-center space-x-3">
-              <span className="text-3xl font-bold text-orange-600">
+              <span className="text-3xl font-bold text-emerald-600">
                 {formatPrice((product as any).finalPrice || product.price)}
               </span>
               {(product as any).discount &&
@@ -182,7 +182,7 @@ export const ProductModal: React.FC<ProductModalProps> = ({
             <div className="space-y-3">
               <button
                 onClick={handleAddToCart}
-                className="w-full bg-orange-600 hover:bg-orange-700 text-white font-semibold py-4 px-6 rounded-lg transition-colors flex items-center justify-center space-x-2"
+                className="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-semibold py-4 px-6 rounded-lg transition-colors flex items-center justify-center space-x-2"
               >
                 <span>Thêm vào giỏ hàng</span>
                 <span className="text-lg">

@@ -64,7 +64,7 @@ export const ProductFilter: React.FC<ProductFilterProps> = ({
                 type="checkbox"
                 checked={filters.category === category}
                 onChange={() => handleCategoryChange(category)}
-                className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                className="rounded border-gray-300 text-emerald-600 focus:ring-emerald-500"
               />
               <span className="text-sm text-gray-700">{category}</span>
             </label>
@@ -82,7 +82,7 @@ export const ProductFilter: React.FC<ProductFilterProps> = ({
               name="priceRange"
               checked={!filters.minPrice && !filters.maxPrice}
               onChange={() => handlePriceRangeChange(undefined, undefined)}
-              className="text-blue-600 focus:ring-blue-500"
+              className="text-emerald-600 focus:ring-emerald-500"
             />
             <span className="text-sm text-gray-700">Tất cả</span>
           </label>
@@ -93,7 +93,7 @@ export const ProductFilter: React.FC<ProductFilterProps> = ({
               name="priceRange"
               checked={filters.minPrice === 0 && filters.maxPrice === 50000}
               onChange={() => handlePriceRangeChange(0, 50000)}
-              className="text-blue-600 focus:ring-blue-500"
+              className="text-emerald-600 focus:ring-emerald-500"
             />
             <span className="text-sm text-gray-700">Dưới 50,000đ</span>
           </label>
@@ -106,7 +106,7 @@ export const ProductFilter: React.FC<ProductFilterProps> = ({
                 filters.minPrice === 50000 && filters.maxPrice === 100000
               }
               onChange={() => handlePriceRangeChange(50000, 100000)}
-              className="text-blue-600 focus:ring-blue-500"
+              className="text-emerald-600 focus:ring-emerald-500"
             />
             <span className="text-sm text-gray-700">50,000đ - 100,000đ</span>
           </label>
@@ -119,7 +119,7 @@ export const ProductFilter: React.FC<ProductFilterProps> = ({
                 filters.minPrice === 100000 && filters.maxPrice === 200000
               }
               onChange={() => handlePriceRangeChange(100000, 200000)}
-              className="text-blue-600 focus:ring-blue-500"
+              className="text-emerald-600 focus:ring-emerald-500"
             />
             <span className="text-sm text-gray-700">100,000đ - 200,000đ</span>
           </label>
@@ -130,7 +130,7 @@ export const ProductFilter: React.FC<ProductFilterProps> = ({
               name="priceRange"
               checked={filters.minPrice === 200000 && !filters.maxPrice}
               onChange={() => handlePriceRangeChange(200000, undefined)}
-              className="text-blue-600 focus:ring-blue-500"
+              className="text-emerald-600 focus:ring-emerald-500"
             />
             <span className="text-sm text-gray-700">Trên 200,000đ</span>
           </label>
@@ -147,7 +147,7 @@ export const ProductFilter: React.FC<ProductFilterProps> = ({
               name="availability"
               checked={filters.isAvailable === undefined}
               onChange={() => handleAvailabilityChange(undefined)}
-              className="text-blue-600 focus:ring-blue-500"
+              className="text-emerald-600 focus:ring-emerald-500"
             />
             <span className="text-sm text-gray-700">Tất cả</span>
           </label>
@@ -158,7 +158,7 @@ export const ProductFilter: React.FC<ProductFilterProps> = ({
               name="availability"
               checked={filters.isAvailable === true}
               onChange={() => handleAvailabilityChange(true)}
-              className="text-blue-600 focus:ring-blue-500"
+              className="text-emerald-600 focus:ring-emerald-500"
             />
             <span className="text-sm text-gray-700">Còn hàng</span>
           </label>
@@ -169,7 +169,7 @@ export const ProductFilter: React.FC<ProductFilterProps> = ({
               name="availability"
               checked={filters.isAvailable === false}
               onChange={() => handleAvailabilityChange(false)}
-              className="text-blue-600 focus:ring-blue-500"
+              className="text-emerald-600 focus:ring-emerald-500"
             />
             <span className="text-sm text-gray-700">Hết hàng</span>
           </label>

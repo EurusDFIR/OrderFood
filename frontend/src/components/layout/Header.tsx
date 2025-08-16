@@ -19,9 +19,9 @@ export const Header: React.FC = () => {
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
           <Link to="/" className="flex items-center space-x-3">
-            <img 
-              src="/lenaFood.png" 
-              alt="Lena Food" 
+            <img
+              src="/src/assets/lenaFood.png"
+              alt="Lena Food"
               className="h-10 w-auto object-contain"
             />
           </Link>
