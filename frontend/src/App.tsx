@@ -19,6 +19,7 @@ import { OrdersPage } from "@/pages/OrdersPage";
 import { OrderDetails } from "@/components/order/OrderDetails";
 import { AdminOrdersPage } from "@/pages/AdminOrdersPage";
 import AdminDashboard from "@/pages/AdminDashboard";
+import AdminProductsPage from "@/pages/AdminProductsPage";
 
 function App() {
   return (
@@ -99,6 +100,16 @@ function App() {
                         <ProtectedRoute>
                           <AdminRoute>
                             <AdminOrdersPage />
+                          </AdminRoute>
+                        </ProtectedRoute>
+                      }
+                    />
+                    <Route
+                      path="/admin/products"
+                      element={
+                        <ProtectedRoute>
+                          <AdminRoute>
+                            <AdminProductsPage />
                           </AdminRoute>
                         </ProtectedRoute>
                       }

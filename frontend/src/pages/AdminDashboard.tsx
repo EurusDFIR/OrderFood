@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useAuth } from "../context/AuthContext";
 import { API_BASE_URL } from "../constants";
+import AdminProductsPage from "./AdminProductsPage";
 import "./AdminDashboard.css";
 
 interface DashboardStats {
@@ -381,8 +382,7 @@ const ShippersManagement = () => {
 const ProductsManagement = () => {
   return (
     <div className="management-section">
-      <h2>Quản lý Sản phẩm</h2>
-      <p>Tính năng quản lý sản phẩm đang được phát triển.</p>
+      <AdminProductsPage />
     </div>
   );
 };

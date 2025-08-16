@@ -7,7 +7,12 @@ const { validationResult } = require('express-validator');
 exports.getAllProducts = async (req, res) => {
   try {
     // Build base query with filters
-    let baseQuery = { isAvailable: true };
+    let baseQuery = {};
+    
+    // Admin có thể xem tất cả sản phẩm, user thường chỉ xem available
+    if (!req.query.isAdmin || req.query.isAdmin !== 'true') {
+      baseQuery.isAvailable = true;
+    }
     
     // Handle filters
     if (req.query.category && req.query.category !== 'all' && req.query.category !== '') {
@@ -72,16 +77,26 @@ exports.getAllProducts = async (req, res) => {
     const totalProducts = await Product.countDocuments(baseQuery);
     const totalPages = Math.ceil(totalProducts / limit);
 
+    console.log('📦 Products API called:', {
+      queryParams: req.query,
+      foundProducts: products.length,
+      isAdmin: req.query.isAdmin === 'true'
+    });
+
     res.status(200).json({
+      success: true,
       status: 'success',
       results: products.length,
-      pagination: {
-        page,
-        limit,
-        totalPages,
-        totalProducts,
-        hasNextPage: page < totalPages,
-        hasPrevPage: page > 1
+      data: {
+        data: products,
+        pagination: {
+          page,
+          limit,
+          totalPages,
+          totalProducts,
+          hasNextPage: page < totalPages,
+          hasPrevPage: page > 1
+        }
       },
       appliedFilters: {
         category: req.query.category || null,
@@ -89,9 +104,6 @@ exports.getAllProducts = async (req, res) => {
         maxPrice: req.query.maxPrice ? parseFloat(req.query.maxPrice) : null,
         minRating: req.query.minRating ? parseFloat(req.query.minRating) : null,
         sort: req.query.sort || 'newest'
-      },
-      data: {
-        products
       }
     });
   } catch (error) {
@@ -207,13 +219,17 @@ exports.getCategories = async (req, res) => {
       { $sort: { count: -1 } }
     ]);
 
+    console.log('📂 Categories API called:', {
+      categoriesFound: categories.length,
+      categories: categories
+    });
+
     res.status(200).json({
+      success: true,
       status: 'success',
       results: categories.length,
-      data: {
-        categories,
-        categoryStats
-      }
+      data: categories,
+      categoryStats
     });
   } catch (error) {
     console.error('Get categories error:', error);

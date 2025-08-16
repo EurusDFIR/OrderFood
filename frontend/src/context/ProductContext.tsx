@@ -180,10 +180,10 @@ export const ProductProvider: React.FC<ProductProviderProps> = ({
         console.log("📦 ProductContext loadProducts response:", response);
 
         if (response.status === "success") {
-          // Handle server response structure: {status, results, pagination, data: {products: []}}
+          // Handle server response structure: {status, results, pagination, data: {data: products, pagination}}
           const serverResponse = response as any;
-          const products = serverResponse.data?.products || [];
-          const pagination = serverResponse.pagination || {
+          const products = serverResponse.data?.data || serverResponse.data?.products || [];
+          const pagination = serverResponse.data?.pagination || serverResponse.pagination || {
             page: 1,
             limit: 12,
             total: products.length,
