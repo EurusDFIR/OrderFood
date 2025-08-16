@@ -6,6 +6,7 @@ import { OrderProvider } from "@/context/OrderContext";
 import { ToastProvider } from "@/context/ToastContext";
 import { Layout } from "@/components/layout/Layout";
 import { ProtectedRoute } from "@/components/auth/ProtectedRoute";
+import { AdminRoute } from "@/components/auth/AdminRoute";
 
 // Pages
 import { HomePage } from "@/pages/Homepage";
@@ -17,6 +18,7 @@ import { CheckoutPage } from "@/pages/CheckoutPage";
 import { OrdersPage } from "@/pages/OrdersPage";
 import { OrderDetails } from "@/components/order/OrderDetails";
 import { AdminOrdersPage } from "@/pages/AdminOrdersPage";
+import AdminDashboard from "@/pages/AdminDashboard";
 
 function App() {
   return (
@@ -72,10 +74,32 @@ function App() {
 
                     {/* Admin Routes */}
                     <Route
+                      path="/admin"
+                      element={
+                        <ProtectedRoute>
+                          <AdminRoute>
+                            <AdminDashboard />
+                          </AdminRoute>
+                        </ProtectedRoute>
+                      }
+                    />
+                    <Route
+                      path="/admin/dashboard"
+                      element={
+                        <ProtectedRoute>
+                          <AdminRoute>
+                            <AdminDashboard />
+                          </AdminRoute>
+                        </ProtectedRoute>
+                      }
+                    />
+                    <Route
                       path="/admin/orders"
                       element={
                         <ProtectedRoute>
-                          <AdminOrdersPage />
+                          <AdminRoute>
+                            <AdminOrdersPage />
+                          </AdminRoute>
                         </ProtectedRoute>
                       }
                     />

@@ -264,7 +264,7 @@ exports.getShipperStats = async (req, res) => {
     const { id } = req.params;
 
     const stats = await Order.aggregate([
-      { $match: { shipper: mongoose.Types.ObjectId(id) } },
+      { $match: { shipper: new mongoose.Types.ObjectId(id) } },
       {
         $group: {
           _id: null,

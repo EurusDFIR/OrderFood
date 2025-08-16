@@ -1,6 +1,7 @@
-import { useState, useEffect } from 'react';
-import { useAuth } from '../contexts/AuthContext';
-import './AdminDashboard.css';
+import React, { useState, useEffect } from "react";
+import { useAuth } from "../context/AuthContext";
+import { API_BASE_URL } from "../constants";
+import "./AdminDashboard.css";
 
 interface DashboardStats {
   users: {
@@ -59,10 +60,10 @@ const AdminDashboard = () => {
   const [loading, setLoading] = useState(true);
   const [stats, setStats] = useState(null);
   const [recentActivities, setRecentActivities] = useState(null);
-  const [activeTab, setActiveTab] = useState('dashboard');
+  const [activeTab, setActiveTab] = useState("dashboard");
 
   useEffect(() => {
-    if (user?.role === 'admin') {
+    if (user?.role === "admin") {
       fetchDashboardData();
     }
   }, [user]);
@@ -70,26 +71,26 @@ const AdminDashboard = () => {
   const fetchDashboardData = async () => {
     try {
       setLoading(true);
-      const token = localStorage.getItem('access_token');
-      
+      const token = localStorage.getItem("access_token");
+
       const [statsRes, activitiesRes] = await Promise.all([
-        fetch('/api/admin/dashboard/stats', {
-          headers: { 'Authorization': `Bearer ${token}` }
+        fetch(`${API_BASE_URL}/admin/dashboard/stats`, {
+          headers: { Authorization: `Bearer ${token}` },
         }),
-        fetch('/api/admin/dashboard/activities', {
-          headers: { 'Authorization': `Bearer ${token}` }
-        })
+        fetch(`${API_BASE_URL}/admin/dashboard/activities`, {
+          headers: { Authorization: `Bearer ${token}` },
+        }),
       ]);
 
       if (statsRes.ok && activitiesRes.ok) {
         const statsData = await statsRes.json();
         const activitiesData = await activitiesRes.json();
-        
+
         setStats(statsData.data);
         setRecentActivities(activitiesData.data);
       }
     } catch (error) {
-      console.error('Error fetching dashboard data:', error);
+      console.error("Error fetching dashboard data:", error);
     } finally {
       setLoading(false);
     }
@@ -97,24 +98,29 @@ const AdminDashboard = () => {
 
   const runAutomation = async () => {
     try {
-      const token = localStorage.getItem('access_token');
-      const response = await fetch('/api/orders/automation/run-all', {
-        method: 'POST',
-        headers: { 'Authorization': `Bearer ${token}` }
-      });
+      const token = localStorage.getItem("access_token");
+      const response = await fetch(
+        `${API_BASE_URL}/orders/automation/run-all`,
+        {
+          method: "POST",
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
 
       if (response.ok) {
         const result = await response.json();
-        alert(`Automation completed!\nOrders moved to ready: ${result.data.prepareToReady}\nShippers assigned: ${result.data.assignShippers}`);
+        alert(
+          `Automation completed!\nOrders moved to ready: ${result.data.prepareToReady}\nShippers assigned: ${result.data.assignShippers}`
+        );
         fetchDashboardData(); // Refresh data
       }
     } catch (error) {
-      console.error('Error running automation:', error);
-      alert('Lỗi khi chạy automation');
+      console.error("Error running automation:", error);
+      alert("Lỗi khi chạy automation");
     }
   };
 
-  if (user?.role !== 'admin') {
+  if (user?.role !== "admin") {
     return (
       <div className="admin-dashboard">
         <div className="access-denied">
@@ -138,69 +144,72 @@ const AdminDashboard = () => {
       <div className="admin-header">
         <h1>Trang Quản Trị</h1>
         <div className="admin-actions">
-          <button 
-            className="automation-btn"
-            onClick={runAutomation}
-          >
+          <button className="automation-btn" onClick={runAutomation}>
             🤖 Chạy Automation
           </button>
         </div>
       </div>
 
       <div className="admin-nav">
-        <button 
-          className={activeTab === 'dashboard' ? 'active' : ''}
-          onClick={() => setActiveTab('dashboard')}
+        <button
+          className={activeTab === "dashboard" ? "active" : ""}
+          onClick={() => setActiveTab("dashboard")}
         >
           📊 Dashboard
         </button>
-        <button 
-          className={activeTab === 'orders' ? 'active' : ''}
-          onClick={() => setActiveTab('orders')}
+        <button
+          className={activeTab === "orders" ? "active" : ""}
+          onClick={() => setActiveTab("orders")}
         >
           📦 Quản lý Đơn hàng
         </button>
-        <button 
-          className={activeTab === 'users' ? 'active' : ''}
-          onClick={() => setActiveTab('users')}
+        <button
+          className={activeTab === "users" ? "active" : ""}
+          onClick={() => setActiveTab("users")}
         >
           👥 Quản lý Người dùng
         </button>
-        <button 
-          className={activeTab === 'shippers' ? 'active' : ''}
-          onClick={() => setActiveTab('shippers')}
+        <button
+          className={activeTab === "shippers" ? "active" : ""}
+          onClick={() => setActiveTab("shippers")}
         >
           🚚 Quản lý Shipper
         </button>
-        <button 
-          className={activeTab === 'products' ? 'active' : ''}
-          onClick={() => setActiveTab('products')}
+        <button
+          className={activeTab === "products" ? "active" : ""}
+          onClick={() => setActiveTab("products")}
         >
           🍕 Quản lý Sản phẩm
         </button>
       </div>
 
       <div className="admin-content">
-        {activeTab === 'dashboard' && (
-          <DashboardOverview stats={stats} recentActivities={recentActivities} />
+        {activeTab === "dashboard" && (
+          <DashboardOverview
+            stats={stats}
+            recentActivities={recentActivities}
+          />
         )}
-        {activeTab === 'orders' && <OrdersManagement />}
-        {activeTab === 'users' && <UsersManagement />}
-        {activeTab === 'shippers' && <ShippersManagement />}
-        {activeTab === 'products' && <ProductsManagement />}
+        {activeTab === "orders" && <OrdersManagement />}
+        {activeTab === "users" && <UsersManagement />}
+        {activeTab === "shippers" && <ShippersManagement />}
+        {activeTab === "products" && <ProductsManagement />}
       </div>
     </div>
   );
 };
 
 // Dashboard Overview Component
-const DashboardOverview: React.FC<DashboardOverviewProps> = ({ stats, recentActivities }) => {
+const DashboardOverview: React.FC<DashboardOverviewProps> = ({
+  stats,
+  recentActivities,
+}) => {
   if (!stats) return <div>Không có dữ liệu</div>;
 
   const formatCurrency = (amount: number): string => {
-    return new Intl.NumberFormat('vi-VN', {
-      style: 'currency',
-      currency: 'VND'
+    return new Intl.NumberFormat("vi-VN", {
+      style: "currency",
+      currency: "VND",
     }).format(amount);
   };
 
@@ -213,7 +222,9 @@ const DashboardOverview: React.FC<DashboardOverviewProps> = ({ stats, recentActi
           <div className="stat-content">
             <h3>Khách hàng</h3>
             <div className="stat-number">{stats.users?.total || 0}</div>
-            <div className="stat-change">+{stats.users?.newToday || 0} hôm nay</div>
+            <div className="stat-change">
+              +{stats.users?.newToday || 0} hôm nay
+            </div>
           </div>
         </div>
 
@@ -222,7 +233,9 @@ const DashboardOverview: React.FC<DashboardOverviewProps> = ({ stats, recentActi
           <div className="stat-content">
             <h3>Đơn hàng</h3>
             <div className="stat-number">{stats.orders?.total || 0}</div>
-            <div className="stat-change">+{stats.orders?.today || 0} hôm nay</div>
+            <div className="stat-change">
+              +{stats.orders?.today || 0} hôm nay
+            </div>
           </div>
         </div>
 
@@ -230,8 +243,12 @@ const DashboardOverview: React.FC<DashboardOverviewProps> = ({ stats, recentActi
           <div className="stat-icon">💰</div>
           <div className="stat-content">
             <h3>Doanh thu tháng</h3>
-            <div className="stat-number">{formatCurrency(stats.revenue?.monthlyRevenue || 0)}</div>
-            <div className="stat-change">{formatCurrency(stats.revenue?.dailyRevenue || 0)} hôm nay</div>
+            <div className="stat-number">
+              {formatCurrency(stats.revenue?.monthlyRevenue || 0)}
+            </div>
+            <div className="stat-change">
+              {formatCurrency(stats.revenue?.dailyRevenue || 0)} hôm nay
+            </div>
           </div>
         </div>
 
@@ -255,7 +272,9 @@ const DashboardOverview: React.FC<DashboardOverviewProps> = ({ stats, recentActi
           </div>
           <div className="status-item">
             <span className="status-label">Đang giao</span>
-            <span className="status-count">{stats.orders?.delivering || 0}</span>
+            <span className="status-count">
+              {stats.orders?.delivering || 0}
+            </span>
           </div>
           {stats.orders?.byStatus?.map((status: any) => (
             <div key={status._id} className="status-item">
@@ -276,10 +295,11 @@ const DashboardOverview: React.FC<DashboardOverviewProps> = ({ stats, recentActi
               {recentActivities.recentOrders?.slice(0, 5).map((order: any) => (
                 <div key={order._id} className="activity-item">
                   <span className="activity-time">
-                    {new Date(order.createdAt).toLocaleString('vi-VN')}
+                    {new Date(order.createdAt).toLocaleString("vi-VN")}
                   </span>
                   <span className="activity-content">
-                    #{order.orderNumber} - {order.user?.name} - {formatCurrency(order.totalAmount)}
+                    #{order.orderNumber} - {order.user?.name} -{" "}
+                    {formatCurrency(order.totalAmount)}
                   </span>
                   <span className={`activity-status status-${order.status}`}>
                     {order.status}
@@ -293,7 +313,7 @@ const DashboardOverview: React.FC<DashboardOverviewProps> = ({ stats, recentActi
               {recentActivities.recentUsers?.slice(0, 5).map((user: any) => (
                 <div key={user._id} className="activity-item">
                   <span className="activity-time">
-                    {new Date(user.createdAt).toLocaleString('vi-VN')}
+                    {new Date(user.createdAt).toLocaleString("vi-VN")}
                   </span>
                   <span className="activity-content">
                     {user.name} - {user.email}
@@ -315,7 +335,9 @@ const DashboardOverview: React.FC<DashboardOverviewProps> = ({ stats, recentActi
                 <span className="product-rank">#{index + 1}</span>
                 <span className="product-name">{item.product?.name}</span>
                 <span className="product-sold">{item.totalSold} đã bán</span>
-                <span className="product-revenue">{formatCurrency(item.revenue)}</span>
+                <span className="product-revenue">
+                  {formatCurrency(item.revenue)}
+                </span>
               </div>
             ))}
           </div>
@@ -331,7 +353,9 @@ const OrdersManagement = () => {
     <div className="management-section">
       <h2>Quản lý Đơn hàng</h2>
       <p>Tính năng này sẽ được phát triển trong phiên bản tiếp theo.</p>
-      <p>Hiện tại bạn có thể sử dụng trang "Đơn hàng Admin" để quản lý đơn hàng.</p>
+      <p>
+        Hiện tại bạn có thể sử dụng trang "Đơn hàng Admin" để quản lý đơn hàng.
+      </p>
     </div>
   );
 };

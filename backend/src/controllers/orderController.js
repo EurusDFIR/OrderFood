@@ -3,181 +3,9 @@ const Cart = require('../models/Cart');
 const Product = require('../models/Product');
 const asyncHandler = require('../utils/asyncHandler');
 const AppError = require('../utils/AppError');
-const { autoAssignShipper } = require('./shipperController');
 
 // @desc    Tạo đơn hàng từ giỏ hàng
-// @route   POST    }
-  ]);
-
-  res.status(200).json({
-    status: 'success',
-    data: {
-      daily: dailyStats[0] || { totalOrders: 0, totalRevenue: 0, avgOrderValue: 0 },
-      weekly: weeklyStats[0] || { totalOrders: 0, totalRevenue: 0 },
-      monthly: monthlyStats[0] || { totalOrders: 0, totalRevenue: 0 },
-      byStatus: statusStats
-    }
-  });
-});
-
-// @desc    Tự động chuyển đơn hàng từ preparing sang ready
-// @route   POST /api/orders/automation/prepare-to-ready
-// @access  Private/Admin
-exports.autoMoveToReady = asyncHandler(async (req, res) => {
-  try {
-    // Lấy các đơn hàng đang ở trạng thái preparing và đã quá thời gian chuẩn bị
-    const preparingOrders = await Order.find({
-      status: 'preparing',
-      createdAt: { $lte: new Date(Date.now() - 30 * 60 * 1000) } // 30 phút
-    });
-
-    const updatedOrders = [];
-    for (const order of preparingOrders) {
-      order.status = 'ready';
-      await order.save();
-      updatedOrders.push(order);
-      
-      // Tự động phân công shipper khi đơn hàng ready
-      try {
-        await autoAssignShipper(order._id);
-      } catch (error) {
-        console.error(`Failed to assign shipper for order ${order.orderNumber}:`, error.message);
-      }
-    }
-
-    res.status(200).json({
-      status: 'success',
-      message: `Đã chuyển ${updatedOrders.length} đơn hàng sang trạng thái ready`,
-      data: updatedOrders
-    });
-  } catch (error) {
-    console.error('Error in autoMoveToReady:', error);
-    res.status(500).json({
-      status: 'error',
-      message: 'Lỗi server khi tự động chuyển trạng thái đơn hàng'
-    });
-  }
-});
-
-// @desc    Tự động phân công shipper cho đơn hàng ready
-// @route   POST /api/orders/automation/assign-shippers
-// @access  Private/Admin
-exports.autoAssignShippers = asyncHandler(async (req, res) => {
-  try {
-    // Lấy các đơn hàng ready chưa có shipper
-    const readyOrders = await Order.find({
-      status: 'ready',
-      shipper: { $exists: false }
-    });
-
-    const results = [];
-    for (const order of readyOrders) {
-      try {
-        const updatedOrder = await autoAssignShipper(order._id);
-        results.push({
-          orderId: order._id,
-          orderNumber: order.orderNumber,
-          status: 'assigned',
-          shipper: updatedOrder.shipper
-        });
-      } catch (error) {
-        results.push({
-          orderId: order._id,
-          orderNumber: order.orderNumber,
-          status: 'failed',
-          error: error.message
-        });
-      }
-    }
-
-    res.status(200).json({
-      status: 'success',
-      message: `Đã xử lý ${results.length} đơn hàng`,
-      data: results
-    });
-  } catch (error) {
-    console.error('Error in autoAssignShippers:', error);
-    res.status(500).json({
-      status: 'error',
-      message: 'Lỗi server khi tự động phân công shipper'
-    });
-  }
-});
-
-// @desc    Cập nhật vị trí shipper và ước tính thời gian giao hàng
-// @route   PATCH /api/orders/:id/delivery-tracking
-// @access  Private/Shipper
-exports.updateDeliveryTracking = asyncHandler(async (req, res) => {
-  const { id } = req.params;
-  const { latitude, longitude, estimatedTime, deliveryNotes } = req.body;
-
-  const order = await Order.findById(id);
-  if (!order) {
-    return next(new AppError('Không tìm thấy đơn hàng', 404));
-  }
-
-  // Kiểm tra quyền: chỉ shipper được phân công mới có thể cập nhật
-  if (req.user.role !== 'admin' && order.shipper.toString() !== req.user._id.toString()) {
-    return next(new AppError('Bạn không có quyền cập nhật đơn hàng này', 403));
-  }
-
-  // Cập nhật tracking info
-  order.deliveryTracking = {
-    ...order.deliveryTracking,
-    currentLocation: { latitude, longitude },
-    estimatedTime,
-    deliveryNotes
-  };
-
-  await order.save();
-
-  res.status(200).json({
-    status: 'success',
-    message: 'Cập nhật thông tin giao hàng thành công',
-    data: order
-  });
-});
-
-// @desc    Shipper cập nhật trạng thái đơn hàng
-// @route   PATCH /api/orders/:id/shipper-status
-// @access  Private/Shipper
-exports.updateOrderStatusByShipper = asyncHandler(async (req, res) => {
-  const { id } = req.params;
-  const { status } = req.body;
-
-  const order = await Order.findById(id);
-  if (!order) {
-    return next(new AppError('Không tìm thấy đơn hàng', 404));
-  }
-
-  // Kiểm tra quyền
-  if (req.user.role !== 'admin' && order.shipper.toString() !== req.user._id.toString()) {
-    return next(new AppError('Bạn không có quyền cập nhật đơn hàng này', 403));
-  }
-
-  // Kiểm tra trạng thái hợp lệ cho shipper
-  const validShipperStatuses = ['out_for_delivery', 'delivered'];
-  if (!validShipperStatuses.includes(status)) {
-    return next(new AppError('Trạng thái không hợp lệ', 400));
-  }
-
-  order.status = status;
-  
-  if (status === 'out_for_delivery') {
-    order.pickedUpAt = new Date();
-  } else if (status === 'delivered') {
-    order.deleveredAt = new Date();
-    order.payment.status = 'paid'; // Tự động đánh dấu đã thanh toán khi giao xong
-  }
-
-  await order.save();
-
-  res.status(200).json({
-    status: 'success',
-    message: 'Cập nhật trạng thái đơn hàng thành công',
-    data: order
-  });
-});
+// @route   POST /api/orders
 // @access  Private
 exports.createOrder = asyncHandler(async (req, res, next) => {
   console.log("📦 createOrder called with body:", JSON.stringify(req.body, null, 2));
@@ -220,20 +48,28 @@ exports.createOrder = asyncHandler(async (req, res, next) => {
   const deliveryFee = itemsPrice >= 200000 ? 0 : 15000; // Free ship cho đơn >= 200k
   
   let discountAmount = 0;
-  // TODO: Implement coupon logic
-  
+  if (couponCode) {
+    // Logic cho mã giảm giá có thể thêm sau
+    console.log("💳 Coupon code provided:", couponCode);
+  }
+
   const totalAmount = itemsPrice + deliveryFee - discountAmount;
 
+  // Prepare order items
+  const orderItems = cart.items.map(item => ({
+    product: item.product._id,
+    name: item.product.name,
+    price: item.product.price,
+    quantity: item.quantity,
+    image: item.product.image
+  }));
+
+  console.log("📦 Order items prepared:", orderItems);
+
   // Tạo đơn hàng
-  const order = await Order.create({
+  const orderData = {
     user: req.user._id,
-    items: cart.items.map(item => ({
-      product: item.product._id,
-      name: item.name,
-      price: item.price,
-      quantity: item.quantity,
-      image: item.image
-    })),
+    items: orderItems,
     deliveryInfo: {
       recipientName: deliveryInfo.recipientName || req.user.name,
       phone: deliveryInfo.phone || req.user.phone,
@@ -242,67 +78,68 @@ exports.createOrder = asyncHandler(async (req, res, next) => {
     },
     payment: {
       method: paymentMethod,
-      status: paymentMethod === 'cash' ? 'pending' : 'pending'
+      status: 'pending'
     },
     itemsPrice,
     deliveryFee,
     discount: {
       amount: discountAmount,
-      couponCode
+      couponCode: couponCode || null
     },
-    totalAmount
-  });
+    totalAmount,
+    status: 'pending'
+  };
 
-  // Xóa giỏ hàng sau khi đặt hàng thành công
-  await Cart.findOneAndUpdate(
-    { user: req.user._id },
-    { $set: { items: [], totalItems: 0, totalAmount: 0 } }
-  );
+  console.log("📦 Creating order with data:", JSON.stringify(orderData, null, 2));
 
-  // Populate order để trả về đầy đủ thông tin
-  await order.populate('user', 'name email phone');
+  const order = await Order.create(orderData);
+  console.log("✅ Order created successfully:", order.orderNumber);
+
+  // Xóa giỏ hàng sau khi tạo đơn hàng thành công
+  cart.items = [];
+  cart.totalItems = 0;
+  cart.totalAmount = 0;
+  await cart.save();
+  console.log("🛒 Cart cleared successfully");
 
   res.status(201).json({
     status: 'success',
-    message: 'Đặt hàng thành công',
+    message: 'Đơn hàng được tạo thành công',
     data: {
       order
     }
   });
 });
 
-// @desc    Lấy lịch sử đơn hàng của user
-// @route   GET /api/orders/my-orders
+// @desc    Lấy danh sách đơn hàng của user
+// @route   GET /api/orders
 // @access  Private
-exports.getMyOrders = asyncHandler(async (req, res) => {
-  const page = parseInt(req.query.page) || 1;
-  const limit = parseInt(req.query.limit) || 10;
-  const skip = (page - 1) * limit;
-
-  const { status } = req.query;
-  const filter = { user: req.user._id };
+exports.getMyOrders = asyncHandler(async (req, res, next) => {
+  console.log("📋 getMyOrders called for user:", req.user._id);
   
+  const { status, page = 1, limit = 10 } = req.query;
+  
+  let query = { user: req.user._id };
   if (status) {
-    filter.status = status;
+    query.status = status;
   }
 
-  const orders = await Order.find(filter)
+  const orders = await Order.find(query)
+    .populate('items.product', 'name price image')
     .sort({ createdAt: -1 })
-    .limit(limit)
-    .skip(skip)
-    .populate('items.product', 'name image');
+    .limit(limit * 1)
+    .skip((page - 1) * limit);
 
-  const total = await Order.countDocuments(filter);
+  const total = await Order.countDocuments(query);
+
+  console.log(`📋 Found ${orders.length} orders for user`);
 
   res.status(200).json({
     status: 'success',
     results: orders.length,
-    pagination: {
-      page,
-      limit,
-      pages: Math.ceil(total / limit),
-      total
-    },
+    total,
+    totalPages: Math.ceil(total / limit),
+    currentPage: page,
     data: {
       orders
     }
@@ -313,21 +150,23 @@ exports.getMyOrders = asyncHandler(async (req, res) => {
 // @route   GET /api/orders/:id
 // @access  Private
 exports.getOrderDetails = asyncHandler(async (req, res, next) => {
+  console.log("🔍 getOrderDetails called for order:", req.params.id);
+  
   const order = await Order.findById(req.params.id)
     .populate('user', 'name email phone')
-    .populate('items.product', 'name image category');
+    .populate('items.product', 'name price image category')
+    .populate('shipper', 'name phone');
 
   if (!order) {
-    return next(new AppError('Đơn hàng không tồn tại', 404));
+    return next(new AppError('Không tìm thấy đơn hàng', 404));
   }
 
   // Kiểm tra quyền: user chỉ xem được đơn hàng của mình, admin xem được tất cả
-  const orderUserId = order.user._id ? order.user._id.toString() : order.user.toString();
-  const currentUserId = req.user._id.toString();
-  
-  if (orderUserId !== currentUserId && req.user.role !== 'admin') {
+  if (order.user._id.toString() !== req.user._id.toString() && req.user.role !== 'admin') {
     return next(new AppError('Bạn không có quyền xem đơn hàng này', 403));
   }
+
+  console.log("✅ Order details retrieved successfully");
 
   res.status(200).json({
     status: 'success',
@@ -347,14 +186,24 @@ exports.cancelOrder = asyncHandler(async (req, res, next) => {
   console.log('User from token:', req.user);
   
   const { reason } = req.body;
+  const orderId = req.params.id;
 
-  const order = await Order.findById(req.params.id);
+  const order = await Order.findById(orderId);
+  
   if (!order) {
-    return next(new AppError('Đơn hàng không tồn tại', 404));
+    console.log('❌ Order not found with ID:', orderId);
+    return next(new AppError('Không tìm thấy đơn hàng', 404));
   }
 
-  // Kiểm tra quyền - Convert về string để so sánh
-  const orderUserId = order.user._id ? order.user._id.toString() : order.user.toString();
+  console.log('📦 Found order:', {
+    id: order._id,
+    orderNumber: order.orderNumber,
+    status: order.status,
+    userId: order.user
+  });
+
+  // Check permissions
+  const orderUserId = order.user.toString();
   const currentUserId = req.user._id.toString();
   
   // Debug log
@@ -373,102 +222,154 @@ exports.cancelOrder = asyncHandler(async (req, res, next) => {
     return next(new AppError('Không thể hủy đơn hàng ở trạng thái hiện tại', 400));
   }
 
+  // Update order status
   order.status = 'cancelled';
   order.cancellationReason = reason || 'Hủy bởi khách hàng';
+  order.cancelledAt = new Date();
+  
+  // Add to status history
+  order.statusHistory.push({
+    status: 'cancelled',
+    timestamp: new Date(),
+    note: `Trạng thái đổi thành cancelled`,
+    updatedBy: req.user._id
+  });
+
   await order.save();
+
+  console.log('✅ Order cancelled successfully');
 
   res.status(200).json({
     status: 'success',
-    message: 'Đã hủy đơn hàng',
+    message: 'Đơn hàng đã được hủy thành công',
     data: {
       order
     }
   });
 });
 
-// ===== ADMIN FUNCTIONS =====
-
-// @desc    Lấy tất cả đơn hàng (Admin)
+// @desc    Lấy tất cả đơn hàng (Admin only)
 // @route   GET /api/orders/admin/all
 // @access  Private/Admin
 exports.getAllOrders = asyncHandler(async (req, res) => {
   console.log('🔧 getAllOrders called by user:', req.user);
-  const page = parseInt(req.query.page) || 1;
-  const limit = parseInt(req.query.limit) || 10;
-  const skip = (page - 1) * limit;
+  
+  const { 
+    status, 
+    page = 1, 
+    limit = 10, 
+    search,
+    startDate,
+    endDate,
+    paymentMethod 
+  } = req.query;
 
-  const { status, dateFrom, dateTo } = req.query;
-  const filter = {};
-
-  if (status) filter.status = status;
-  if (dateFrom || dateTo) {
-    filter.createdAt = {};
-    if (dateFrom) filter.createdAt.$gte = new Date(dateFrom);
-    if (dateTo) filter.createdAt.$lte = new Date(dateTo);
+  // Build query
+  let query = {};
+  
+  if (status) query.status = status;
+  if (paymentMethod) query['payment.method'] = paymentMethod;
+  
+  if (search) {
+    query.$or = [
+      { orderNumber: { $regex: search, $options: 'i' } },
+      { 'deliveryInfo.recipientName': { $regex: search, $options: 'i' } },
+      { 'deliveryInfo.phone': { $regex: search, $options: 'i' } }
+    ];
   }
 
-  const orders = await Order.find(filter)
-    .sort({ createdAt: -1 })
-    .limit(limit)
-    .skip(skip)
+  if (startDate || endDate) {
+    query.createdAt = {};
+    if (startDate) query.createdAt.$gte = new Date(startDate);
+    if (endDate) query.createdAt.$lte = new Date(endDate);
+  }
+
+  const orders = await Order.find(query)
     .populate('user', 'name email phone')
-    .populate('items.product', 'name image');
+    .populate('items.product', 'name category')
+    .populate('shipper', 'name phone')
+    .sort({ createdAt: -1 })
+    .limit(limit * 1)
+    .skip((page - 1) * limit);
 
-  const total = await Order.countDocuments(filter);
+  const total = await Order.countDocuments(query);
 
-  console.log('🔧 getAllOrders found', orders.length, 'orders');
-  console.log('🔧 Sample order:', orders[0] ? orders[0] : 'No orders');
+  console.log(`🔧 getAllOrders found ${orders.length} orders`);
+  if (orders.length > 0) {
+    console.log('🔧 Sample order:', orders[0]);
+  }
 
   res.status(200).json({
     status: 'success',
     results: orders.length,
-    pagination: {
-      page,
-      limit,
-      pages: Math.ceil(total / limit),
-      total
-    },
+    total,
+    totalPages: Math.ceil(total / limit),
+    currentPage: parseInt(page),
     data: {
       orders
     }
   });
 });
 
-// @desc    Cập nhật trạng thái đơn hàng (Admin)
+// @desc    Cập nhật trạng thái đơn hàng (Admin only)
 // @route   PUT /api/orders/:id/status
 // @access  Private/Admin
 exports.updateOrderStatus = asyncHandler(async (req, res, next) => {
   const { status, note } = req.body;
+  const orderId = req.params.id;
 
-  const order = await Order.findById(req.params.id);
+  const order = await Order.findById(orderId);
+  
   if (!order) {
-    return next(new AppError('Đơn hàng không tồn tại', 404));
+    return next(new AppError('Không tìm thấy đơn hàng', 404));
   }
 
-  const validStatuses = ['pending', 'confirmed', 'preparing', 'ready', 'delivering', 'completed', 'cancelled'];
-  if (!validStatuses.includes(status)) {
-    return next(new AppError('Trạng thái không hợp lệ', 400));
+  // Validate status transition
+  const validTransitions = {
+    'pending': ['confirmed', 'cancelled'],
+    'confirmed': ['preparing', 'cancelled'],
+    'preparing': ['ready', 'cancelled'],
+    'ready': ['assigned_to_shipper', 'cancelled'],
+    'assigned_to_shipper': ['out_for_delivery', 'cancelled'],
+    'out_for_delivery': ['delivered', 'cancelled'],
+    'delivered': [],
+    'cancelled': []
+  };
+
+  if (!validTransitions[order.status]?.includes(status)) {
+    return next(new AppError(`Không thể chuyển từ trạng thái ${order.status} sang ${status}`, 400));
   }
 
+  // Update order
+  const oldStatus = order.status;
   order.status = status;
-  if (note) {
-    order.statusHistory[order.statusHistory.length - 1].note = note;
+  
+  // Add to status history
+  order.statusHistory.push({
+    status,
+    timestamp: new Date(),
+    note: note || `Trạng thái đổi từ ${oldStatus} thành ${status}`,
+    updatedBy: req.user._id
+  });
+
+  // Set specific timestamps
+  if (status === 'delivered') {
+    order.deleveredAt = new Date();
+    order.payment.status = 'paid'; // Tự động đánh dấu đã thanh toán
   }
 
   await order.save();
 
-  await order.populate('user', 'name email phone');
-
   res.status(200).json({
     status: 'success',
-    message: 'Đã cập nhật trạng thái đơn hàng',
+    message: 'Cập nhật trạng thái đơn hàng thành công',
     data: {
       order
     }
   });
 });
 
-// @desc    Thống kê đơn hàng (Admin)
+// @desc    Lấy thống kê đơn hàng (Admin only)
 // @route   GET /api/orders/admin/stats
 // @access  Private/Admin
 exports.getOrderStats = asyncHandler(async (req, res) => {
