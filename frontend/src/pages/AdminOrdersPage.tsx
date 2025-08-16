@@ -60,19 +60,32 @@ export const AdminOrdersPage: React.FC = () => {
   const fetchAllOrders = async () => {
     try {
       setLoading(true);
-      const response = await fetch("/api/orders/admin/all", {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem("access_token")}`,
-        },
-      });
+      const token = localStorage.getItem("access_token");
+      console.log("🔧 Admin token:", token);
+
+      const response = await fetch(
+        "http://localhost:5000/api/orders/admin/all",
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      console.log("🔧 Admin response:", response.status, response.statusText);
 
       if (!response.ok) {
         throw new Error("Failed to fetch orders");
       }
 
       const data = await response.json();
+      console.log("🔧 Admin response data:", data);
+
       if (data.status === "success") {
+        console.log("🔧 Setting orders:", data.data.orders);
         setOrders(data.data.orders);
+      } else {
+        console.log("🔧 API response not successful:", data);
       }
     } catch (error) {
       console.error("Error fetching orders:", error);
@@ -85,14 +98,17 @@ export const AdminOrdersPage: React.FC = () => {
   const updateOrderStatus = async (orderId: string, newStatus: string) => {
     try {
       setUpdatingOrder(orderId);
-      const response = await fetch(`/api/orders/${orderId}/status`, {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${localStorage.getItem("access_token")}`,
-        },
-        body: JSON.stringify({ status: newStatus }),
-      });
+      const response = await fetch(
+        `http://localhost:5000/api/orders/${orderId}/status`,
+        {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${localStorage.getItem("access_token")}`,
+          },
+          body: JSON.stringify({ status: newStatus }),
+        }
+      );
 
       if (!response.ok) {
         throw new Error("Failed to update status");
@@ -240,11 +256,23 @@ export const AdminOrdersPage: React.FC = () => {
           </ul>
         </div>
 
-        {orders.length === 0 && (
+        {orders.length === 0 && !loading && (
           <div className="text-center py-12">
             <p className="text-gray-500">No orders found.</p>
+            <button
+              onClick={fetchAllOrders}
+              className="mt-4 px-4 py-2 bg-orange-600 text-white rounded hover:bg-orange-700"
+            >
+              Retry Loading Orders
+            </button>
           </div>
         )}
+
+        {/* Debug info */}
+        <div className="mt-4 p-4 bg-gray-100 rounded">
+          <p>Debug: Orders count: {orders.length}</p>
+          <p>Loading: {loading ? "true" : "false"}</p>
+        </div>
       </div>
     </div>
   );

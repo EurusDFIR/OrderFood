@@ -220,6 +220,7 @@ exports.cancelOrder = asyncHandler(async (req, res, next) => {
 // @route   GET /api/orders/admin/all
 // @access  Private/Admin
 exports.getAllOrders = asyncHandler(async (req, res) => {
+  console.log('🔧 getAllOrders called by user:', req.user);
   const page = parseInt(req.query.page) || 1;
   const limit = parseInt(req.query.limit) || 10;
   const skip = (page - 1) * limit;
@@ -242,6 +243,9 @@ exports.getAllOrders = asyncHandler(async (req, res) => {
     .populate('items.product', 'name image');
 
   const total = await Order.countDocuments(filter);
+
+  console.log('🔧 getAllOrders found', orders.length, 'orders');
+  console.log('🔧 Sample order:', orders[0] ? orders[0] : 'No orders');
 
   res.status(200).json({
     status: 'success',

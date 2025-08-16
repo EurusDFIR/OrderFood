@@ -62,7 +62,11 @@ router.get('/my-orders', getMyOrders);
 router.put('/:id/cancel', orderIdValidation, cancelOrder);
 
 // Admin routes - Must be before /:id route to avoid conflicts
-router.get('/admin/all', restrictTo('admin'), getAllOrders);
+router.get('/admin/all', (req, res, next) => {
+  console.log('🔧 Admin route hit: /admin/all');
+  console.log('🔧 User:', req.user);
+  next();
+}, restrictTo('admin'), getAllOrders);
 router.get('/admin/stats', restrictTo('admin'), getOrderStats);
 router.put('/:id/status', restrictTo('admin'), ...orderIdValidation, ...updateStatusValidation, updateOrderStatus);
 
