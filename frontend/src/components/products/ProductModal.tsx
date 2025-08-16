@@ -33,12 +33,13 @@ export const ProductModal: React.FC<ProductModalProps> = ({
     onClose();
   };
 
-  const images = product.images || ((product as any).image ? [(product as any).image] : []);
+  const images =
+    product.images || ((product as any).image ? [(product as any).image] : []);
   const displayImage =
     images.length > 0 ? images[selectedImageIndex] || images[0] : null;
 
   const hasValidImage =
-    displayImage && 
+    displayImage &&
     displayImage !== "/placeholder-food.svg" &&
     displayImage !== "" &&
     !displayImage.includes("data:image");
@@ -58,53 +59,41 @@ export const ProductModal: React.FC<ProductModalProps> = ({
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
           {/* Product Images */}
           <div className="space-y-4">
-            <div className="aspect-square bg-gray-100 rounded-lg overflow-hidden flex items-center justify-center">
+            <div className="aspect-square bg-gradient-to-br from-emerald-50 to-emerald-100 rounded-lg overflow-hidden flex items-center justify-center">
               {hasValidImage ? (
                 <img
                   src={displayImage}
                   alt={product.name}
                   className="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
                   onError={(e) => {
-                    // Replace with fallback food image
-                    e.currentTarget.src = "https://images.unsplash.com/photo-1565299624946-b28f40a0ca4b?w=500&q=80";
-                    e.currentTarget.onerror = null; // Prevent infinite loop
+                    // Hide the image and show fallback
+                    e.currentTarget.style.display = "none";
+                    const fallbackDiv = e.currentTarget.parentElement?.querySelector('.fallback-placeholder') as HTMLElement;
+                    if (fallbackDiv) {
+                      fallbackDiv.style.display = 'flex';
+                    }
                   }}
                 />
-              ) : (
-                <div className="w-full h-full relative">
-                  <img
-                    src="https://images.unsplash.com/photo-1565299624946-b28f40a0ca4b?w=500&q=80"
-                    alt={product.name}
-                    className="w-full h-full object-cover"
-                    onError={(e) => {
-                      // Final fallback to SVG placeholder
-                      e.currentTarget.style.display = "none";
-                      const fallbackDiv = e.currentTarget.parentElement?.querySelector('.fallback-placeholder') as HTMLElement;
-                      if (fallbackDiv) {
-                        fallbackDiv.style.display = 'flex';
-                      }
-                    }}
-                  />
-                  <div className="fallback-placeholder absolute inset-0 items-center justify-center text-gray-400"
-                    style={{ display: 'none' }}
-                  >
-                    <div className="text-center">
-                      <svg
-                        className="w-16 h-16 mx-auto mb-2"
-                        fill="currentColor"
-                        viewBox="0 0 20 20"
-                      >
-                        <path
-                          fillRule="evenodd"
-                          d="M4 3a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V5a2 2 0 00-2-2H4zm12 12H4l4-8 3 6 2-4 3 6z"
-                          clipRule="evenodd"
-                        />
-                      </svg>
-                      <p className="text-sm">🍽️ {product.name}</p>
-                    </div>
+              ) : null}
+              
+              {/* Fallback placeholder - always present but hidden if image loads */}
+              <div className={`fallback-placeholder w-full h-full flex items-center justify-center text-emerald-600 ${hasValidImage ? 'absolute inset-0' : ''}`}
+                style={{ display: hasValidImage ? 'none' : 'flex' }}
+              >
+                <div className="text-center">
+                  <div className="w-20 h-20 mx-auto mb-4 bg-emerald-200 rounded-full flex items-center justify-center">
+                    <svg
+                      className="w-10 h-10 text-emerald-600"
+                      fill="currentColor"
+                      viewBox="0 0 20 20"
+                    >
+                      <path d="M3 4a1 1 0 011-1h12a1 1 0 011 1v2a1 1 0 01-1 1H4a1 1 0 01-1-1V4zM3 10a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H4a1 1 0 01-1-1v-6zM14 9a1 1 0 00-1 1v6a1 1 0 001 1h2a1 1 0 001-1v-6a1 1 0 00-1-1h-2z" />
+                    </svg>
                   </div>
+                  <h3 className="font-medium text-lg mb-1">{product.name}</h3>
+                  <p className="text-sm text-emerald-500">🍽️ Món ngon đang chờ bạn</p>
                 </div>
-              )}
+              </div>
             </div>
 
             {/* Image thumbnails */}
@@ -125,9 +114,10 @@ export const ProductModal: React.FC<ProductModalProps> = ({
                       alt={`${product.name} ${index + 1}`}
                       className="w-full h-full object-cover"
                       onError={(e) => {
-                        const target = e.currentTarget;
-                        if (target.src !== "/placeholder-food.svg") {
-                          target.src = "/placeholder-food.svg";
+                        // Hide thumbnail if image fails to load
+                        const button = e.currentTarget.closest('button');
+                        if (button) {
+                          button.style.display = 'none';
                         }
                       }}
                     />
