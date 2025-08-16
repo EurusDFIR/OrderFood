@@ -5,8 +5,8 @@ import { formatPrice } from "@/utils/helpers";
 
 interface CartItemProps {
   item: CartItemType;
-  onUpdateQuantity: (itemId: string, quantity: number) => void;
-  onRemove: (itemId: string) => void;
+  onUpdateQuantity: (productId: string, quantity: number) => void;
+  onRemove: (productId: string) => void;
   isUpdating?: boolean;
 }
 
@@ -18,12 +18,12 @@ export const CartItem: React.FC<CartItemProps> = ({
 }) => {
   const handleQuantityChange = (newQuantity: number) => {
     if (newQuantity > 0) {
-      onUpdateQuantity(item._id, newQuantity);
+      onUpdateQuantity(item.product._id, newQuantity);
     }
   };
 
   const handleRemove = () => {
-    onRemove(item._id);
+    onRemove(item.product._id);
   };
 
   const itemTotal = item.price * item.quantity;
@@ -33,7 +33,10 @@ export const CartItem: React.FC<CartItemProps> = ({
       {/* Product Image */}
       <div className="flex-shrink-0">
         <img
-          src={item.product.images[0] || "/placeholder-food.jpg"}
+          src={
+            (item.product.images && item.product.images[0]) ||
+            "/placeholder-food.jpg"
+          }
           alt={item.product.name}
           className="w-16 h-16 object-cover rounded-md"
         />

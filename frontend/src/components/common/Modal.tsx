@@ -18,13 +18,14 @@ export const Modal: React.FC<ModalProps> = ({
   footer,
   size = "md",
 }) => {
+  console.log("🔍 Modal render:", { isOpen, title });
   if (!isOpen) return null;
 
   const sizeClasses = {
     sm: "max-w-sm",
     md: "max-w-md",
     lg: "max-w-lg",
-    xl: "max-w-xl",
+    xl: "max-w-6xl",
   };
 
   const handleBackdropClick = (e: React.MouseEvent) => {
@@ -50,10 +51,18 @@ export const Modal: React.FC<ModalProps> = ({
   }, [onClose]);
 
   return (
-    <div className="modal-overlay" onClick={handleBackdropClick}>
-      <div className={cn("modal-content", sizeClasses[size])}>
+    <div
+      className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4"
+      onClick={handleBackdropClick}
+    >
+      <div
+        className={cn(
+          "bg-white rounded-xl shadow-xl w-full max-h-full overflow-auto",
+          sizeClasses[size]
+        )}
+      >
         {title && (
-          <div className="modal-header">
+          <div className="px-6 py-4 border-b border-gray-200 flex justify-between items-center">
             <h3 className="text-lg font-semibold">{title}</h3>
             <button
               onClick={onClose}
@@ -76,9 +85,13 @@ export const Modal: React.FC<ModalProps> = ({
           </div>
         )}
 
-        <div className="modal-body">{children}</div>
+        <div className="px-6 py-4">{children}</div>
 
-        {footer && <div className="modal-footer">{footer}</div>}
+        {footer && (
+          <div className="px-6 py-4 border-t border-gray-200 flex justify-end space-x-2">
+            {footer}
+          </div>
+        )}
       </div>
     </div>
   );

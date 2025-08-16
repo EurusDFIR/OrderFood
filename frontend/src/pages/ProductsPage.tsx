@@ -352,7 +352,8 @@ export const ProductsPage: React.FC = () => {
                       return (
                         <div
                           key={product._id}
-                          className="group bg-white rounded-xl border border-gray-200 hover:border-orange-300 hover:shadow-lg transition-all duration-300 overflow-hidden"
+                          className="group bg-white rounded-xl border border-gray-200 hover:border-orange-300 hover:shadow-lg transition-all duration-300 overflow-hidden cursor-pointer"
+                          onClick={() => handleViewDetails(product)}
                         >
                           {/* Product Image */}
                           <div className="relative overflow-hidden">
@@ -435,32 +436,10 @@ export const ProductsPage: React.FC = () => {
 
                               <div className="flex items-center gap-2">
                                 <button
-                                  onClick={() => handleViewDetails(product)}
-                                  className="p-2 text-gray-400 hover:text-orange-600 hover:bg-orange-50 rounded-lg transition-colors"
-                                  title="Xem chi tiết"
-                                >
-                                  <svg
-                                    className="w-5 h-5"
-                                    fill="none"
-                                    stroke="currentColor"
-                                    viewBox="0 0 24 24"
-                                  >
-                                    <path
-                                      strokeLinecap="round"
-                                      strokeLinejoin="round"
-                                      strokeWidth={2}
-                                      d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
-                                    />
-                                    <path
-                                      strokeLinecap="round"
-                                      strokeLinejoin="round"
-                                      strokeWidth={2}
-                                      d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"
-                                    />
-                                  </svg>
-                                </button>
-                                <button
-                                  onClick={() => handleAddToCart(product)}
+                                  onClick={(e) => {
+                                    e.stopPropagation(); // Prevent triggering card click
+                                    handleAddToCart(product);
+                                  }}
                                   className="bg-orange-500 hover:bg-orange-600 text-white px-4 py-2 rounded-lg font-medium transition-colors"
                                 >
                                   Thêm

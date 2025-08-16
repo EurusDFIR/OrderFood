@@ -126,7 +126,9 @@ export const CartProvider: React.FC<CartProviderProps> = ({ children }) => {
 
       if (response.status === "success" && response.data) {
         console.log("✅ Cart loaded successfully:", response.data);
-        dispatch({ type: "SET_CART", payload: response.data });
+        // Extract cart from response.data structure: { cart: {...} }
+        const cartData = (response.data as any).cart || response.data;
+        dispatch({ type: "SET_CART", payload: cartData });
       } else {
         console.log("ℹ️ No existing cart, initializing empty cart");
         // If no cart exists, initialize empty cart state
@@ -144,8 +146,12 @@ export const CartProvider: React.FC<CartProviderProps> = ({ children }) => {
   // Add item to cart
   const addToCart = useCallback(
     async (productId: string, quantity: number = 1): Promise<boolean> => {
-      console.log("🛒 addToCart called with:", { productId, quantity, isAuthenticated });
-      
+      console.log("🛒 addToCart called with:", {
+        productId,
+        quantity,
+        isAuthenticated,
+      });
+
       if (!isAuthenticated) {
         console.log("❌ User not authenticated");
         showError("Vui lòng đăng nhập để thêm sản phẩm vào giỏ hàng");
@@ -163,9 +169,11 @@ export const CartProvider: React.FC<CartProviderProps> = ({ children }) => {
         console.log("📥 Cart service response:", response);
 
         if (response.status === "success" && response.data) {
-          dispatch({ type: "SET_CART", payload: response.data });
+          // Extract cart from response.data structure: { cart: {...} }
+          const cartData = (response.data as any).cart || response.data;
+          dispatch({ type: "SET_CART", payload: cartData });
           showSuccess("Đã thêm sản phẩm vào giỏ hàng!");
-          console.log("✅ Cart updated successfully:", response.data);
+          console.log("✅ Cart updated successfully:", cartData);
           return true;
         } else {
           console.log("❌ Cart service failed:", response.message);
@@ -191,19 +199,26 @@ export const CartProvider: React.FC<CartProviderProps> = ({ children }) => {
 
   // Update cart item quantity
   const updateCartItem = useCallback(
-    async (itemId: string, quantity: number): Promise<boolean> => {
+    async (productId: string, quantity: number): Promise<boolean> => {
       if (!isAuthenticated) {
         return false;
       }
 
       dispatch({ type: "SET_LOADING", payload: true });
       try {
-        const response = await cartService.updateCartItem(itemId, { quantity });
+        console.log("CartContext: Updating cart item", { productId, quantity });
+        const response = await cartService.updateCartItem(productId, {
+          quantity,
+        });
 
         if (response.status === "success" && response.data) {
-          dispatch({ type: "SET_CART", payload: response.data });
+          console.log("CartContext: Update successful", response.data);
+          // Extract cart from response.data structure: { cart: {...} }
+          const cartData = (response.data as any).cart || response.data;
+          dispatch({ type: "SET_CART", payload: cartData });
           return true;
         } else {
+          console.error("CartContext: Update failed", response);
           dispatch({
             type: "SET_ERROR",
             payload: response.message || "Failed to update cart item",
@@ -223,19 +238,24 @@ export const CartProvider: React.FC<CartProviderProps> = ({ children }) => {
 
   // Remove item from cart
   const removeFromCart = useCallback(
-    async (itemId: string): Promise<boolean> => {
+    async (productId: string): Promise<boolean> => {
       if (!isAuthenticated) {
         return false;
       }
 
       dispatch({ type: "SET_LOADING", payload: true });
       try {
-        const response = await cartService.removeFromCart(itemId);
+        console.log("CartContext: Removing cart item", { productId });
+        const response = await cartService.removeFromCart(productId);
 
         if (response.status === "success" && response.data) {
-          dispatch({ type: "SET_CART", payload: response.data });
+          console.log("CartContext: Remove successful", response.data);
+          // Extract cart from response.data structure: { cart: {...} }
+          const cartData = (response.data as any).cart || response.data;
+          dispatch({ type: "SET_CART", payload: cartData });
           return true;
         } else {
+          console.error("CartContext: Remove failed", response);
           dispatch({
             type: "SET_ERROR",
             payload: response.message || "Failed to remove item from cart",

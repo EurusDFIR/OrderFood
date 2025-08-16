@@ -8,9 +8,12 @@ const AppError = require('../utils/AppError');
 // @route   GET /api/cart
 // @access  Private
 exports.getCart = asyncHandler(async (req, res) => {
+  console.log("🛒 getCart called for user:", req.user._id);
   let cart = await Cart.findOne({ user: req.user._id });
+  console.log("🛒 Found cart:", cart);
   
   if (!cart) {
+    console.log("🛒 Creating new cart for user");
     cart = await Cart.create({ 
       user: req.user._id, 
       items: [],
@@ -21,7 +24,8 @@ exports.getCart = asyncHandler(async (req, res) => {
 
   // Populate sau khi đã có cart
   if (cart.items && cart.items.length > 0) {
-    await cart.populate('items.product', 'name price image isAvailable');
+    console.log("🛒 Populating cart items:", cart.items.length);
+    await cart.populate('items.product', 'name price image images isAvailable');
     
     // Kiểm tra sản phẩm còn available không
     const updatedItems = cart.items.filter(item => {
@@ -37,6 +41,7 @@ exports.getCart = asyncHandler(async (req, res) => {
     }
   }
 
+  console.log("🛒 Returning cart with items:", cart.items.length);
   res.status(200).json({
     status: 'success',
     data: {
@@ -50,6 +55,7 @@ exports.getCart = asyncHandler(async (req, res) => {
 // @access  Private
 exports.addToCart = asyncHandler(async (req, res, next) => {
   const { productId, quantity = 1 } = req.body;
+  console.log("🛒 addToCart called:", { productId, quantity, userId: req.user._id });
 
   // Kiểm tra sản phẩm có tồn tại và available không
   const product = await Product.findById(productId);
@@ -61,9 +67,14 @@ exports.addToCart = asyncHandler(async (req, res, next) => {
     return next(new AppError('Sản phẩm hiện tại không khả dụng', 400));
   }
 
+  console.log("🛒 Product found:", product.name);
+
   // Tìm hoặc tạo cart
   let cart = await Cart.findOne({ user: req.user._id });
+  console.log("🛒 Existing cart:", cart);
+  
   if (!cart) {
+    console.log("🛒 Creating new cart");
     cart = new Cart({ user: req.user._id, items: [] });
   }
 
@@ -72,6 +83,11 @@ exports.addToCart = asyncHandler(async (req, res, next) => {
     cart.items = [];
   }
 
+  console.log("🛒 Cart before adding item:", {
+    itemsCount: cart.items.length,
+    items: cart.items.map(item => ({ productId: item.product, quantity: item.quantity }))
+  });
+
   // Kiểm tra sản phẩm đã có trong cart chưa
   const existingItemIndex = cart.items.findIndex(
     item => item.product.toString() === productId
@@ -79,9 +95,11 @@ exports.addToCart = asyncHandler(async (req, res, next) => {
 
   if (existingItemIndex > -1) {
     // Cập nhật số lượng
+    console.log("🛒 Updating existing item quantity");
     cart.items[existingItemIndex].quantity += quantity;
   } else {
     // Thêm sản phẩm mới
+    console.log("🛒 Adding new item to cart");
     cart.items.push({
       product: productId,
       name: product.name,
@@ -95,7 +113,7 @@ exports.addToCart = asyncHandler(async (req, res, next) => {
 
   // Populate để trả về thông tin đầy đủ - chỉ populate nếu có items
   if (cart.items && cart.items.length > 0) {
-    await cart.populate('items.product', 'name price image isAvailable');
+    await cart.populate('items.product', 'name price image images isAvailable');
   }
 
   res.status(200).json({
@@ -140,7 +158,7 @@ exports.updateCartItem = asyncHandler(async (req, res, next) => {
 
   // Populate chỉ khi có items
   if (cart.items && cart.items.length > 0) {
-    await cart.populate('items.product', 'name price image isAvailable');
+    await cart.populate('items.product', 'name price image images isAvailable');
   }
 
   res.status(200).json({
@@ -176,7 +194,7 @@ exports.removeFromCart = asyncHandler(async (req, res, next) => {
   
   // Populate chỉ khi còn items
   if (cart.items && cart.items.length > 0) {
-    await cart.populate('items.product', 'name price image isAvailable');
+    await cart.populate('items.product', 'name price image images isAvailable');
   }
 
   res.status(200).json({

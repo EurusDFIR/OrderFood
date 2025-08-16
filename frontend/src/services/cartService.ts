@@ -34,9 +34,12 @@ class CartService {
   }
 
   // Update cart item quantity
-  async updateCartItem(itemId: string, data: UpdateCartItemRequest): Promise<ApiResponse<Cart>> {
+  async updateCartItem(productId: string, data: UpdateCartItemRequest): Promise<ApiResponse<Cart>> {
     try {
-      const response = await apiService.put<Cart>(`${this.baseUrl}/items/${itemId}`, data);
+      const response = await apiService.put<Cart>(`${this.baseUrl}/update`, {
+        productId,
+        ...data
+      });
       return response;
     } catch (error: any) {
       return {
@@ -48,9 +51,9 @@ class CartService {
   }
 
   // Remove item from cart
-  async removeFromCart(itemId: string): Promise<ApiResponse<Cart>> {
+  async removeFromCart(productId: string): Promise<ApiResponse<Cart>> {
     try {
-      const response = await apiService.delete<Cart>(`${this.baseUrl}/items/${itemId}`);
+      const response = await apiService.delete<Cart>(`${this.baseUrl}/remove/${productId}`);
       return response;
     } catch (error: any) {
       return {
@@ -64,7 +67,7 @@ class CartService {
   // Clear entire cart
   async clearCart(): Promise<ApiResponse<{ message: string }>> {
     try {
-      const response = await apiService.delete<{ message: string }>(this.baseUrl);
+      const response = await apiService.delete<{ message: string }>(`${this.baseUrl}/clear`);
       return response;
     } catch (error: any) {
       return {

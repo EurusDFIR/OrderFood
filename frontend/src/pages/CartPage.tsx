@@ -15,12 +15,12 @@ export const CartPage: React.FC = () => {
     clearCart,
   } = useCart();
 
-  const handleUpdateQuantity = async (itemId: string, quantity: number) => {
-    await updateCartItem(itemId, quantity);
+  const handleUpdateQuantity = async (productId: string, quantity: number) => {
+    await updateCartItem(productId, quantity);
   };
 
-  const handleRemoveItem = async (itemId: string) => {
-    await removeFromCart(itemId);
+  const handleRemoveItem = async (productId: string) => {
+    await removeFromCart(productId);
   };
 
   const handleClearCart = async () => {
@@ -67,8 +67,18 @@ export const CartPage: React.FC = () => {
   // Safe cart items to prevent undefined errors
   const safeCartItems = cart?.items || [];
 
+  // Debug logging
+  console.log("🛒 CartPage render:", {
+    cart,
+    safeCartItems,
+    safeCartItemsLength: safeCartItems.length,
+    isLoading,
+    error,
+  });
+
   // Empty cart state
   if (!cart || safeCartItems.length === 0) {
+    console.log("🛒 CartPage: Showing empty cart state");
     return (
       <div className="container mx-auto px-4 py-8">
         <div className="text-center max-w-md mx-auto">
@@ -97,6 +107,13 @@ export const CartPage: React.FC = () => {
         <p className="text-gray-600">
           {safeCartItems.length} món trong giỏ hàng
         </p>
+        {/* Debug button */}
+        <button
+          onClick={handleClearCart}
+          className="mt-2 px-4 py-2 bg-red-500 text-white rounded"
+        >
+          DEBUG: Clear Cart
+        </button>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
