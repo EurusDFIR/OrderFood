@@ -16,6 +16,7 @@ import { CartPage } from "@/pages/CartPage";
 import { CheckoutPage } from "@/pages/CheckoutPage";
 import { OrdersPage } from "@/pages/OrdersPage";
 import { OrderDetails } from "@/components/order/OrderDetails";
+import { AdminOrdersPage } from "@/pages/AdminOrdersPage";
 
 function App() {
   return (
@@ -65,6 +66,16 @@ function App() {
                       element={
                         <ProtectedRoute>
                           <OrderDetails />
+                        </ProtectedRoute>
+                      }
+                    />
+
+                    {/* Admin Routes */}
+                    <Route
+                      path="/admin/orders"
+                      element={
+                        <ProtectedRoute>
+                          <AdminOrdersPage />
                         </ProtectedRoute>
                       }
                     />

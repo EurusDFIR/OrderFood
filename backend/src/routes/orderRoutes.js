@@ -61,12 +61,12 @@ router.get('/my-orders', getMyOrders);
 // Cancel order route - Must be before /:id route to avoid conflicts
 router.put('/:id/cancel', orderIdValidation, cancelOrder);
 
-// Get order detail route
-router.get('/:id', orderIdValidation, getOrderDetails);
-
-// Admin routes - Apply restrictTo specifically to each route
+// Admin routes - Must be before /:id route to avoid conflicts
 router.get('/admin/all', restrictTo('admin'), getAllOrders);
 router.get('/admin/stats', restrictTo('admin'), getOrderStats);
 router.put('/:id/status', restrictTo('admin'), ...orderIdValidation, ...updateStatusValidation, updateOrderStatus);
+
+// Get order detail route - Must be last to avoid conflicts
+router.get('/:id', orderIdValidation, getOrderDetails);
 
 module.exports = router;

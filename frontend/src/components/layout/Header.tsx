@@ -38,6 +38,9 @@ export const Header: React.FC = () => {
                 <Link to="/orders" className="nav-link">
                   Đơn hàng
                 </Link>
+                <Link to="/admin/orders" className="nav-link">
+                  Admin
+                </Link>
                 <Link to="/cart" className="nav-link relative">
                   Giỏ hàng
                   <CartBadge />

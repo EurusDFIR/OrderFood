@@ -387,13 +387,13 @@ export const OrderDetails: React.FC = () => {
                   </span>
                 </div>
               )}
-              {order.estimatedDeliveryTime && (
+              {order.estimatedDelivery && (
                 <div>
                   <span className="text-gray-600 block">
                     Estimated Delivery
                   </span>
                   <span className="text-gray-900">
-                    {formatDate(order.estimatedDeliveryTime)}
+                    {formatDate(order.estimatedDelivery)}
                   </span>
                 </div>
               )}
