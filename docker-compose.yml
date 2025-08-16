@@ -38,7 +38,6 @@ services:
       - /app/node_modules
     networks:
       - lena-food-network
-    command: npm start
 
   # Frontend React App
   frontend:
