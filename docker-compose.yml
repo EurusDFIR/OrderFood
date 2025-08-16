@@ -30,6 +30,7 @@ services:
       PORT: 5000
       MONGODB_URI: mongodb://admin:password123@mongodb:27017/orderfood?authSource=admin
       JWT_SECRET: your-super-secret-jwt-key-2024-lena-food
+      JWT_EXPIRE: 7d
       FRONTEND_URL: http://localhost:3000
     depends_on:
       - mongodb
