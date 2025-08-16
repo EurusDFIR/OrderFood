@@ -38,7 +38,7 @@ const createOrderValidation = [
 
 const updateStatusValidation = [
   body('status')
-    .isIn(['pending', 'confirmed', 'preparing', 'ready', 'delivering', 'completed', 'cancelled'])
+    .isIn(['pending', 'confirmed', 'preparing', 'ready', 'assigned_to_shipper', 'out_for_delivery', 'delivered', 'cancelled'])
     .withMessage('Trạng thái không hợp lệ'),
   body('note')
     .optional()

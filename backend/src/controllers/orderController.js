@@ -322,20 +322,30 @@ exports.updateOrderStatus = asyncHandler(async (req, res, next) => {
     return next(new AppError('Không tìm thấy đơn hàng', 404));
   }
 
-  // Validate status transition
+  // Validate status transition - More flexible for admin
   const validTransitions = {
-    'pending': ['confirmed', 'cancelled'],
-    'confirmed': ['preparing', 'cancelled'],
-    'preparing': ['ready', 'cancelled'],
-    'ready': ['assigned_to_shipper', 'cancelled'],
-    'assigned_to_shipper': ['out_for_delivery', 'cancelled'],
+    'pending': ['confirmed', 'preparing', 'ready', 'cancelled'],
+    'confirmed': ['preparing', 'ready', 'cancelled'],
+    'preparing': ['ready', 'assigned_to_shipper', 'cancelled'],
+    'ready': ['assigned_to_shipper', 'out_for_delivery', 'cancelled'],
+    'assigned_to_shipper': ['out_for_delivery', 'delivered', 'cancelled'],
     'out_for_delivery': ['delivered', 'cancelled'],
     'delivered': [],
     'cancelled': []
   };
 
-  if (!validTransitions[order.status]?.includes(status)) {
+  // Admin có thể thay đổi trạng thái tự do hơn
+  const isAdmin = req.user.role === 'admin';
+  
+  console.log(`🔍 Status update attempt: ${order.status} → ${status}, User: ${req.user.role}, Admin: ${isAdmin}`);
+  
+  if (!isAdmin && !validTransitions[order.status]?.includes(status)) {
     return next(new AppError(`Không thể chuyển từ trạng thái ${order.status} sang ${status}`, 400));
+  }
+  
+  // Admin warning nhưng vẫn cho phép
+  if (isAdmin && !validTransitions[order.status]?.includes(status)) {
+    console.log(`⚠️ Admin override: ${order.status} → ${status} for order ${order.orderNumber}`);
   }
 
   // Update order

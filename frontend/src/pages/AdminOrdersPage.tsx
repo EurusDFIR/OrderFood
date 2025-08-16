@@ -43,8 +43,9 @@ const statusOptions = [
   { value: "confirmed", label: "Confirmed" },
   { value: "preparing", label: "Preparing" },
   { value: "ready", label: "Ready" },
-  { value: "delivering", label: "Delivering" },
-  { value: "completed", label: "Completed" },
+  { value: "assigned_to_shipper", label: "Assigned to Shipper" },
+  { value: "out_for_delivery", label: "Out for Delivery" },
+  { value: "delivered", label: "Delivered" },
   { value: "cancelled", label: "Cancelled" },
 ];
 
@@ -111,7 +112,8 @@ export const AdminOrdersPage: React.FC = () => {
       );
 
       if (!response.ok) {
-        throw new Error("Failed to update status");
+        const errorData = await response.json();
+        throw new Error(errorData.message || "Failed to update status");
       }
 
       const data = await response.json();
@@ -123,10 +125,16 @@ export const AdminOrdersPage: React.FC = () => {
           )
         );
         alert("Order status updated successfully");
+        // Refresh data to make sure everything is in sync
+        fetchAllOrders();
       }
     } catch (error) {
       console.error("Error updating status:", error);
-      alert("Failed to update order status");
+      const errorMessage =
+        error instanceof Error ? error.message : "Unknown error";
+      alert(`Failed to update order status: ${errorMessage}`);
+      // Reset the select to original value
+      fetchAllOrders();
     } finally {
       setUpdatingOrder(null);
     }
