@@ -139,12 +139,19 @@ const AdminProductsPage: React.FC = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
+    console.log("🚀 Form submitted!");
+    console.log("📝 Form data:", formData);
+
     const token = getAuthToken();
+    console.log("🔑 Token:", token ? "Present" : "Missing");
+
     const url = editingProduct
       ? `${API_BASE_URL}/products/${editingProduct._id}`
       : `${API_BASE_URL}/products`;
 
     const method = editingProduct ? "PUT" : "POST";
+    console.log("🌐 URL:", url);
+    console.log("🔧 Method:", method);
 
     try {
       const submitData = {
@@ -155,6 +162,8 @@ const AdminProductsPage: React.FC = () => {
           .filter((tag) => tag),
       };
 
+      console.log("📦 Submit data:", submitData);
+
       const response = await fetch(url, {
         method,
         headers: {
@@ -164,7 +173,11 @@ const AdminProductsPage: React.FC = () => {
         body: JSON.stringify(submitData),
       });
 
+      console.log("📡 Response status:", response.status);
+
       if (response.ok) {
+        const responseData = await response.json();
+        console.log("✅ Success:", responseData);
         toast.success(
           editingProduct
             ? "Cập nhật sản phẩm thành công!"
@@ -175,10 +188,12 @@ const AdminProductsPage: React.FC = () => {
         fetchProducts();
       } else {
         const error = await response.json();
+        console.error("❌ Error response:", error);
+        console.error("📋 Validation errors:", error.errors);
         toast.error(error.message || "Có lỗi xảy ra");
       }
     } catch (error) {
-      console.error("Error saving product:", error);
+      console.error("💥 Catch error:", error);
       toast.error("Lỗi khi lưu sản phẩm");
     }
   };
@@ -411,11 +426,13 @@ const AdminProductsPage: React.FC = () => {
                   <input
                     type="text"
                     required
+                    minLength={2}
+                    maxLength={100}
                     value={formData.name}
                     onChange={(e) =>
                       setFormData({ ...formData, name: e.target.value })
                     }
-                    placeholder="Nhập tên sản phẩm"
+                    placeholder="Nhập tên sản phẩm (2-100 ký tự)"
                   />
                 </div>
 
@@ -496,15 +513,21 @@ const AdminProductsPage: React.FC = () => {
               </div>
 
               <div className="form-group">
-                <label>Mô tả</label>
+                <label>Mô tả *</label>
                 <textarea
+                  required
+                  minLength={10}
+                  maxLength={500}
                   value={formData.description}
                   onChange={(e) =>
                     setFormData({ ...formData, description: e.target.value })
                   }
-                  placeholder="Mô tả chi tiết về sản phẩm..."
+                  placeholder="Mô tả chi tiết về sản phẩm (tối thiểu 10 ký tự)..."
                   rows={3}
                 />
+                <small className="text-gray-500">
+                  {formData.description.length}/500 ký tự (tối thiểu 10)
+                </small>
               </div>
 
               <div className="form-group">
