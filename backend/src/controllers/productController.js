@@ -201,35 +201,21 @@ exports.getPopularProducts = async (req, res) => {
 // @access  Public
 exports.getCategories = async (req, res) => {
   try {
-    // Get distinct categories from products
-    const categories = await Product.distinct('category', { isAvailable: true });
+    const Category = require('../models/Category');
     
-    // Get category stats
-    const categoryStats = await Product.aggregate([
-      { $match: { isAvailable: true } },
-      { 
-        $group: {
-          _id: '$category',
-          count: { $sum: 1 },
-          avgPrice: { $avg: '$price' },
-          minPrice: { $min: '$price' },
-          maxPrice: { $max: '$price' }
-        }
-      },
-      { $sort: { count: -1 } }
-    ]);
+    // Get all categories (remove isActive filter since field doesn't exist)
+    const categories = await Category.find({}).sort({ displayName: 1 });
 
     console.log('📂 Categories API called:', {
       categoriesFound: categories.length,
-      categories: categories
+      categories: categories.map(c => ({ name: c.name, displayName: c.displayName }))
     });
 
     res.status(200).json({
       success: true,
       status: 'success',
       results: categories.length,
-      data: categories,
-      categoryStats
+      data: categories
     });
   } catch (error) {
     console.error('Get categories error:', error);

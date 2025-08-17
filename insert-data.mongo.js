@@ -1,4 +1,5 @@
-// MongoDB insertion script
+// @ts-nocheck
+// MongoDB insertion script - Not JavaScript!
 use lenaFoodDB
 
 // Insert sample admin user (for login)
