@@ -1,66 +1,5 @@
-// MongoDB Initialization Script for Lena Food App
-// This script runs when MongoDB container starts for the first time
-
-// Switch to admin database to create admin user
-db = db.getSiblingDB('admin');
-
-// Create admin user (skip if already exists)
-try {
-  db.createUser({
-    user: 'admin',
-    pwd: 'adminPassword',
-    roles: [
-      {
-        role: 'userAdminAnyDatabase',
-        db: 'admin'
-      },
-      {
-        role: 'readWriteAnyDatabase',
-        db: 'admin'
-      }
-    ]
-  });
-  print('✅ Admin user created successfully');
-} catch (error) {
-  if (error.code === 51003) {
-    print('⚠️  Admin user already exists, skipping...');
-  } else {
-    print('❌ Error creating admin user:', error);
-  }
-}
-
-// Switch to application database
-db = db.getSiblingDB('lenaFoodDB');
-
-// Create application admin user (skip if already exists)
-try {
-  db.createUser({
-    user: 'lenaadmin',
-    pwd: 'lenaPassword123',
-    roles: [
-      {
-        role: 'readWrite',
-        db: 'lenaFoodDB'
-      }
-    ]
-  });
-  print('✅ Application user created successfully');
-} catch (error) {
-  if (error.code === 51003) {
-    print('⚠️  Application user already exists, skipping...');
-  } else {
-    print('❌ Error creating application user:', error);
-  }
-}
-
-// Check if data already exists
-const existingProducts = db.products.countDocuments();
-const existingUsers = db.users.countDocuments();
-
-print(`📊 Current data: ${existingProducts} products, ${existingUsers} users`);
-
-if (existingProducts === 0) {
-  print('🔄 Inserting sample data...');
+// MongoDB insertion script
+use lenaFoodDB
 
 // Insert sample admin user (for login)
 db.users.insertOne({
@@ -293,7 +232,7 @@ db.products.insertMany([
   }
 ]);
 
-// Insert sample categories
+// Insert categories
 db.categories.insertMany([
   {
     name: 'main-dish',
@@ -337,13 +276,7 @@ db.categories.insertMany([
   }
 ]);
 
-print('✅ Database initialized successfully with sample data!');
-print('📊 Inserted:');
-print('   - 1 admin user (hung@gmail.com / hung123)');
-print('   - 12 products');
-print('   - 5 categories');
-print('🔐 Admin user: hung@gmail.com / hung123');
-
-} else {
-  print('ℹ️  Sample data already exists, skipping insertion...');
-}
+print('✅ Data inserted successfully!');
+print(`📊 Products: ${db.products.countDocuments()}`);
+print(`👤 Users: ${db.users.countDocuments()}`);
+print(`📂 Categories: ${db.categories.countDocuments()}`);
