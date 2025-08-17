@@ -103,9 +103,12 @@ export const AdvancedFilters: React.FC<AdvancedFiltersProps> = ({
                 className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
               >
                 <option value="">Tất cả danh mục</option>
-                {categories.map((category) => (
-                  <option key={category} value={category}>
-                    {category}
+                {categories.map((category: any) => (
+                  <option
+                    key={category.name || category}
+                    value={category.name || category}
+                  >
+                    {category.displayName || category.name || category}
                   </option>
                 ))}
               </select>

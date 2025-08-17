@@ -108,7 +108,7 @@ exports.validateCreateProduct = [
   body('category')
     .notEmpty()
     .withMessage('Danh mục là bắt buộc')
-    .isIn(['com', 'pho', 'bun', 'banh-mi', 'do-uong', 'trang-mieng', 'mon-chay', 'lau', 'nuong', 'khac'])
+    .isIn(['main-dish', 'appetizer', 'snack', 'beverage', 'dessert'])
     .withMessage('Danh mục không hợp lệ'),
   
   body('image')
@@ -206,7 +206,7 @@ exports.validateUpdateProduct = [
   
   body('category')
     .optional()
-    .isIn(['com', 'pho', 'bun', 'banh-mi', 'do-uong', 'trang-mieng', 'mon-chay', 'lau', 'nuong', 'khac'])
+    .isIn(['main-dish', 'appetizer', 'snack', 'beverage', 'dessert'])
     .withMessage('Danh mục không hợp lệ'),
   
   body('image')

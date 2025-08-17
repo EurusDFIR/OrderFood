@@ -12,6 +12,7 @@ interface Product {
   image: string;
   isAvailable: boolean;
   isPopular: boolean;
+  stock: number;
   tags: string[];
   ratings: {
     average: number;
@@ -30,11 +31,12 @@ interface ProductFormData {
   isAvailable: boolean;
   isPopular: boolean;
   tags: string;
+  stock: number;
 }
 
 const AdminProductsPage: React.FC = () => {
   const [products, setProducts] = useState<Product[]>([]);
-  const [categories, setCategories] = useState<string[]>([]);
+  const [categories, setCategories] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [showModal, setShowModal] = useState(false);
   const [editingProduct, setEditingProduct] = useState<Product | null>(null);
@@ -50,6 +52,7 @@ const AdminProductsPage: React.FC = () => {
     isAvailable: true,
     isPopular: false,
     tags: "",
+    stock: 0,
   });
 
   const API_BASE_URL =
@@ -217,6 +220,7 @@ const AdminProductsPage: React.FC = () => {
       isAvailable: true,
       isPopular: false,
       tags: "",
+      stock: 0,
     });
     setEditingProduct(null);
   };
@@ -233,6 +237,7 @@ const AdminProductsPage: React.FC = () => {
       isAvailable: product.isAvailable,
       isPopular: product.isPopular,
       tags: product.tags.join(", "),
+      stock: product.stock || 0,
     });
     setShowModal(true);
   };
@@ -290,8 +295,14 @@ const AdminProductsPage: React.FC = () => {
           >
             <option value="">📁 Tất cả danh mục</option>
             {(Array.isArray(categories) ? categories : []).map((category) => (
-              <option key={category} value={category}>
-                {categoryLabels[category] || category}
+              <option
+                key={category.name || category}
+                value={category.name || category}
+              >
+                {category.displayName ||
+                  categoryLabels[category.name || category] ||
+                  category.name ||
+                  category}
               </option>
             ))}
           </select>
@@ -424,6 +435,23 @@ const AdminProductsPage: React.FC = () => {
                     placeholder="0"
                   />
                 </div>
+
+                <div className="form-group">
+                  <label>Số lượng *</label>
+                  <input
+                    type="number"
+                    required
+                    min="0"
+                    value={formData.stock}
+                    onChange={(e) =>
+                      setFormData({
+                        ...formData,
+                        stock: Number(e.target.value),
+                      })
+                    }
+                    placeholder="0"
+                  />
+                </div>
               </div>
 
               <div className="form-row">
@@ -439,8 +467,14 @@ const AdminProductsPage: React.FC = () => {
                     <option value="">Chọn danh mục</option>
                     {(Array.isArray(categories) ? categories : []).map(
                       (category) => (
-                        <option key={category} value={category}>
-                          {categoryLabels[category] || category}
+                        <option
+                          key={category.name || category}
+                          value={category.name || category}
+                        >
+                          {category.displayName ||
+                            categoryLabels[category.name || category] ||
+                            category.name ||
+                            category}
                         </option>
                       )
                     )}
